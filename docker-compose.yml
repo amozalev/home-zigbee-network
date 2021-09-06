@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: home-zigbee-network-frontend
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    command: npm run start
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: home-zigbee-network-mosquitto
+    restart: unless-stopped
+#    expose:
+#      - "1883"
+    ports:
+      - "1983:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log/mosquitto.log:/mosquitto/log/mosquitto.log
+#  zigbe2mqtt:
+#    image: zigbee2mqtt/zigbee2mqtt-armv7:1.21.1-1
+#    container_name: home-zigbee-network-zigbee2mqtt
