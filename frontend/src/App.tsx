@@ -1,13 +1,15 @@
 import React from 'react';
 import './App.css';
-import MqttClient from "./components/mqtt-client";
+import MqttExplorer from './components/mqtt-explorer';
 
 function App() {
     return (
         <div className="App">
             <header className="App-header">
-                <MqttClient host={process.env.REACT_APP_MQTT_BROKER}
-                            port={parseInt(process.env.REACT_APP_MQTT_PORT as string)}/>
+                <MqttExplorer
+                    host={process.env.REACT_APP_MQTT_BROKER}
+                    port={parseInt(process.env.REACT_APP_MQTT_PORT as string)}
+                />
             </header>
         </div>
     );
