@@ -1,11 +1,18 @@
 import * as React from 'react';
 import * as mqtt from 'mqtt';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { IClientOptions } from 'mqtt/types/lib/client-options';
 
 export interface MqttClientProps {
     host: string | undefined;
     port: number | undefined;
+    topic: string;
+    onConnectionChange: (
+        clientId: string,
+        connectionStatus: ConnectionStatus,
+        err?: Error
+    ) => void;
+    onMessage: (msg: MqttMessage) => void;
 }
 
 export interface MqttMessage {
@@ -13,11 +20,19 @@ export interface MqttMessage {
     message: string;
 }
 
-const MqttClient: React.FC<MqttClientProps> = ({ host, port }) => {
-    const [connectionStatus, setConnectStatus] =
-        useState<string>('Disconnected');
-    const [message, setMessage] = useState<MqttMessage | null>(null);
+export enum ConnectionStatus {
+    CONNECTED = 'Connected',
+    RECONNECTING = 'Reconnecting',
+    DISCONNECTED = 'Disconeccted'
+}
 
+const MqttClient: React.FC<MqttClientProps> = ({
+    host,
+    port,
+    topic,
+    onConnectionChange,
+    onMessage
+}) => {
     const url = `${host}:${port}/mqtt`;
     const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
     const options: IClientOptions = {
@@ -52,33 +67,33 @@ const MqttClient: React.FC<MqttClientProps> = ({ host, port }) => {
         if (client) {
             console.log(client);
             client.on('connect', () => {
-                setConnectStatus('Connected');
-                client.subscribe('testyTestClient');
+                onConnectionChange(clientId, ConnectionStatus.CONNECTED);
+                client.subscribe(topic);
             });
             client.on('error', (err) => {
-                console.error('Connection error: ', err);
+                onConnectionChange(
+                    clientId,
+                    ConnectionStatus.DISCONNECTED,
+                    err
+                );
                 client.end();
             });
             client.on('reconnect', () => {
-                setConnectStatus('Reconnecting');
-                client.unsubscribe('testyTestClient');
+                onConnectionChange(clientId, ConnectionStatus.RECONNECTING);
+                client.unsubscribe(topic);
             });
             client.on('message', (topic, message, packet) => {
-                const payload = { topic, message: message.toString() };
-                console.log('message:', payload);
-                setMessage(payload);
+                const payload: MqttMessage = {
+                    topic,
+                    message: message.toString()
+                };
+                console.log('message:', payload, packet);
+                onMessage(payload);
             });
         }
     }, [host, port]);
 
-    return (
-        <>
-            <p>Client id: {clientId}</p>
-            <p>Connection status: {connectionStatus}</p>
-            <p>Topic: {message?.topic}</p>
-            <p>Message: {message?.message}</p>
-        </>
-    );
+    return <></>;
 };
 
 export default MqttClient;
