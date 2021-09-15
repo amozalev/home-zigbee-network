@@ -1,99 +1,132 @@
 import * as React from 'react';
 import * as mqtt from 'mqtt';
-import { useEffect } from 'react';
-import { IClientOptions } from 'mqtt/types/lib/client-options';
+import { useEffect, useState } from 'react';
+import {
+    IClientOptions,
+    IClientPublishOptions
+} from 'mqtt/types/lib/client-options';
+import { IPublishPacket } from 'mqtt-packet';
+import { MqttClient } from 'mqtt';
 
 export interface MqttClientProps {
     host: string | undefined;
     port: number | undefined;
     topic: string;
+    newMessage: MqttMessage | null;
     onConnectionChange: (
         clientId: string,
-        connectionStatus: ConnectionStatus,
+        connectionStatus: ConnectionStatusType,
         err?: Error
     ) => void;
-    onMessage: (msg: MqttMessage) => void;
+    onMessage: (topic: string, payload: Buffer, packet: IPublishPacket) => void;
+    // connect: (client: MqttClient) => void;
 }
 
 export interface MqttMessage {
     topic: string;
     message: string;
+    options?: IClientPublishOptions;
 }
 
-export enum ConnectionStatus {
+export enum ConnectionStatusType {
     CONNECTED = 'Connected',
     RECONNECTING = 'Reconnecting',
-    DISCONNECTED = 'Disconeccted'
+    DISCONNECTED = 'Disconnected'
 }
 
-const MqttClient: React.FC<MqttClientProps> = ({
+const MyMqttClient: React.FC<MqttClientProps> = ({
     host,
     port,
     topic,
+    newMessage,
     onConnectionChange,
     onMessage
 }) => {
-    const url = `${host}:${port}/mqtt`;
     const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
-    const options: IClientOptions = {
-        // host: host,
-        // hostname: 'broker.emqx.io',
-        // port: port,
-        // protocol: 'ws',
-        clientId: clientId,
-        keepalive: 60,
-        protocolId: 'MQTT',
-        protocolVersion: 4,
-        clean: true,
-        reconnectPeriod: 1000,
-        connectTimeout: 30 * 1000,
-        will: {
-            topic: 'WillMsg',
-            payload: 'Connection Closed abnormally..!',
-            qos: 0,
-            retain: false
-        }
-        // will: {
-        //     topic: '#',
-        //     payload: '',
-        //     qos: 1,
-        //     retain: true
-        // }
-    };
+    const [client, setClient] = useState<MqttClient | null>(null);
 
-    const client = mqtt.connect(url, options);
+    useEffect(() => {
+        const url = `ws://${host}:${port}/mqtt`;
+        const options: IClientOptions = {
+            // host: host,
+            // hostname: 'broker.emqx.io',
+            // port: port,
+            // protocol: 'ws',
+            clientId: clientId,
+            keepalive: 60,
+            protocolId: 'MQTT',
+            protocolVersion: 4,
+            clean: true,
+            reconnectPeriod: 1000,
+            connectTimeout: 30 * 1000,
+            will: {
+                topic: 'WillMsg',
+                payload: 'Connection Closed abnormally..!',
+                qos: 0,
+                retain: false
+            }
+            // will: {
+            //     topic: '#',
+            //     payload: '',
+            //     qos: 1,
+            //     retain: true
+            // }
+        };
+
+        if (port && host) {
+            const newClient = mqtt.connect(url, options);
+            setClient(newClient);
+        } else if (client && (!host || !port)) {
+            client.end();
+        }
+    }, [host, port]);
 
     useEffect(() => {
         if (client) {
-            console.log(client);
+            // console.log(client);
             client.on('connect', () => {
-                onConnectionChange(clientId, ConnectionStatus.CONNECTED);
-                client.subscribe(topic);
+                onConnectionChange(clientId, ConnectionStatusType.CONNECTED);
             });
             client.on('error', (err) => {
                 onConnectionChange(
                     clientId,
-                    ConnectionStatus.DISCONNECTED,
+                    ConnectionStatusType.DISCONNECTED,
                     err
                 );
                 client.end();
             });
             client.on('reconnect', () => {
-                onConnectionChange(clientId, ConnectionStatus.RECONNECTING);
+                onConnectionChange(clientId, ConnectionStatusType.RECONNECTING);
                 client.unsubscribe(topic);
             });
-            client.on('message', (topic, message, packet) => {
-                const payload: MqttMessage = {
-                    topic,
-                    message: message.toString()
-                };
-                console.log('message:', payload, packet);
-                onMessage(payload);
+            client.on('end', () => {
+                if (topic) client.unsubscribe(topic);
+                onConnectionChange(clientId, ConnectionStatusType.DISCONNECTED);
             });
+            client.on('message', onMessage);
         }
-    }, [host, port]);
+    }, [client, onConnectionChange, onMessage]);
+
+    useEffect(() => {
+        if (client && !client.connected) {
+            client.subscribe(topic);
+        }
+        return () => {
+            client?.unsubscribe(topic);
+        };
+    }, [topic]);
+
+    useEffect(() => {
+        if (newMessage) {
+            client?.publish(
+                newMessage.message,
+                newMessage.message,
+                newMessage.options || {}
+            );
+        }
+    }, [newMessage]);
 
     return <></>;
 };
 
-export default MqttClient;
+export default MyMqttClient;
