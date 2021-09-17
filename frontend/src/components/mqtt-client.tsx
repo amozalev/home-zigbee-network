@@ -11,7 +11,7 @@ import { MqttClient } from 'mqtt';
 export interface MqttClientProps {
     host: string | undefined;
     port: number | undefined;
-    topic: string;
+    topic: string | undefined;
     newMessage: MqttMessage | null;
     onConnectionChange: (
         clientId: string,
@@ -97,7 +97,7 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
             });
             client.on('reconnect', () => {
                 onConnectionChange(clientId, ConnectionStatusType.RECONNECTING);
-                client.unsubscribe(topic);
+                if (topic) client.unsubscribe(topic);
             });
             client.on('end', () => {
                 if (topic) client.unsubscribe(topic);
@@ -108,11 +108,11 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
     }, [client, onConnectionChange, onMessage]);
 
     useEffect(() => {
-        if (client && !client.connected) {
+        if (client?.connected && topic) {
             client.subscribe(topic);
         }
         return () => {
-            client?.unsubscribe(topic);
+            if (topic) client?.unsubscribe(topic);
         };
     }, [topic]);
 
