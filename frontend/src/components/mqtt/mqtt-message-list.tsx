@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Message from './mqtt-message';
-import { MqttMessageType } from './mqtt-client';
+import { MqttMessageType } from './mqtt-connection';
 import { Divider } from 'antd';
 import { useEffect, useState } from 'react';
 

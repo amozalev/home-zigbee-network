@@ -1,12 +1,11 @@
 import * as React from 'react';
 import {
     ConnectionStatusType,
-    MemoizedMyMqttClient,
+    MemoMqttConnectionForm,
     MqttMessageType
-} from './mqtt-client';
-import { Profiler, useCallback, useEffect, useRef, useState } from 'react';
+} from './mqtt-connection';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { IConnectPacket, IPublishPacket } from 'mqtt-packet';
-import { onRenderCallback } from '../../utils/utils';
 import MqttMessageList from './mqtt-message-list';
 import { MqttClient } from 'mqtt';
 import * as mqtt from 'mqtt';
@@ -127,7 +126,7 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
 
     return (
         <>
-            <MemoizedMyMqttClient
+            <MemoMqttConnectionForm
                 defaultHost={defaultHost}
                 defaultPort={defaultPort}
                 connectionStatus={connectionStatus}

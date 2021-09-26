@@ -7,8 +7,6 @@ import {
 import { Button, Col, Divider, Form, Input, Row } from 'antd';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import {
-    CheckCircleFilled,
-    CloseCircleFilled,
     CheckCircleTwoTone,
     CloseCircleTwoTone,
     SyncOutlined
@@ -44,7 +42,7 @@ export interface FormFieldsType {
     topic: string;
 }
 
-const MyMqttClient: React.FC<MqttClientProps> = ({
+const MqttConnectionForm: React.FC<MqttClientProps> = ({
     defaultHost,
     defaultPort,
     connectionStatus,
@@ -227,4 +225,4 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
     );
 };
 
-export const MemoizedMyMqttClient = React.memo(MyMqttClient);
+export const MemoMqttConnectionForm = React.memo(MqttConnectionForm);

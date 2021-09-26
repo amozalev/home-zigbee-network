@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MqttMessageType } from './mqtt-client';
+import { MqttMessageType } from './mqtt-connection';
 
 export interface MqttMessageProps {
     msg: MqttMessageType;
