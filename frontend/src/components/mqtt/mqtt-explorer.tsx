@@ -7,7 +7,7 @@ import {
 import { Profiler, useCallback, useEffect, useRef, useState } from 'react';
 import { IConnectPacket, IPublishPacket } from 'mqtt-packet';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { onRenderCallback } from '../utils/utils';
+import { onRenderCallback } from '../../utils/utils';
 import { MqttMessageProps } from './mqtt-message';
 import MqttMessageList from './mqtt-message-list';
 import { MqttClient } from 'mqtt';
@@ -40,14 +40,31 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
         ConnectionStatusType.DISCONNECTED
     );
     const [msgLst, setMessageLst] = useState<MqttMessageType[]>([]);
-
     const connAttempts = useRef<number>(0);
 
-    const onPublishMessage = (msg: MqttMessageType): void => {};
+    const mqttConnect = useCallback((url: string, options: IClientOptions) => {
+        setClient(mqtt.connect(url, options));
+        console.log('==mqttConnect client', client);
+    }, []);
 
-    const onTopicSubscription = (err: Error, granted: ISubscriptionGrant[]) => {
-        console.log('==subscribed', err, granted);
-    };
+    const mqttDisconnect = useCallback(() => {
+        if (client) client.end();
+    }, [client]);
+
+    const subscribeTopic = useCallback(
+        (topic: string) => {
+            console.log('==subscribeTopic client', client);
+            if (client) client?.subscribe(topic, onTopicSubscription);
+        },
+        [client]
+    );
+
+    const unsubscribeTopic = useCallback(
+        (topic: string) => {
+            if (client) client?.unsubscribe(topic);
+        },
+        [client]
+    );
 
     useEffect(() => {
         console.log('==useEffect');
@@ -106,30 +123,11 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
         }
     }, [client]);
 
-    const mqttConnect = useCallback((url: string, options: IClientOptions) => {
-        const newClient = mqtt.connect(url, options);
-        setClient(newClient);
-        console.log('==mqttConnect client', newClient);
-    }, []);
+    const onPublishMessage = (msg: MqttMessageType): void => {};
 
-    const mqttDisconnect = useCallback(() => {
-        if (client) client.end(false, {}, () => {});
-    }, [client]);
-
-    const subscribeTopic = useCallback(
-        (topic: string) => {
-            console.log('==subscribeTopic client', client);
-            if (client) client?.subscribe(topic, onTopicSubscription);
-        },
-        [client]
-    );
-
-    const unsubscribeTopic = useCallback(
-        (topic: string) => {
-            if (client) client?.unsubscribe(topic);
-        },
-        [client]
-    );
+    const onTopicSubscription = (err: Error, granted: ISubscriptionGrant[]) => {
+        console.log('==subscribed');
+    };
 
     return (
         <>

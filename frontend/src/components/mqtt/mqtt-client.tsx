@@ -118,7 +118,7 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
                 return 'error';
         }
     };
-
+    console.log('==Rerender=============');
     return (
         <>
             <Divider orientation="left">MQTT Connection</Divider>
@@ -205,8 +205,8 @@ function myMqttClientPropsAreEqual(
     console.log(
         '==equalProps',
         prev.defaultHost === next.defaultHost,
-        prev.defaultPort == next.defaultPort,
-        prev.connectionStatus == next.connectionStatus,
+        prev.defaultPort === next.defaultPort,
+        prev.connectionStatus === next.connectionStatus,
         prev.mqttConnect === next.mqttConnect,
         prev.mqttDisconnect === next.mqttDisconnect,
         prev.subscribeTopic === next.subscribeTopic,
@@ -215,7 +215,7 @@ function myMqttClientPropsAreEqual(
     return (
         prev.defaultHost === next.defaultHost &&
         prev.defaultPort === next.defaultPort &&
-        prev.connectionStatus == next.connectionStatus &&
+        prev.connectionStatus === next.connectionStatus &&
         prev.mqttConnect === next.mqttConnect &&
         prev.mqttDisconnect === next.mqttDisconnect &&
         prev.subscribeTopic === next.subscribeTopic &&
@@ -224,6 +224,6 @@ function myMqttClientPropsAreEqual(
 }
 
 export const MemoizedMyMqttClient = React.memo(
-    MyMqttClient
-    // myMqttClientPropsAreEqual
+    MyMqttClient,
+    myMqttClientPropsAreEqual
 );

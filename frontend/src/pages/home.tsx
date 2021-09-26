@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Layout, { Content } from 'antd/lib/layout/layout';
-import MqttExplorer from '../components/mqtt-explorer';
+import MqttExplorer from '../components/mqtt/mqtt-explorer';
 import { Breadcrumb, Menu } from 'antd';
 import 'antd/dist/antd.css';
 import './home.css';
