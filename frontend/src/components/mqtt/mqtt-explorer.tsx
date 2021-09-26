@@ -127,17 +127,15 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
 
     return (
         <>
-            <Profiler id="MyMqttClient" onRender={onRenderCallback}>
-                <MemoizedMyMqttClient
-                    defaultHost={defaultHost}
-                    defaultPort={defaultPort}
-                    connectionStatus={connectionStatus}
-                    mqttConnect={mqttConnect}
-                    mqttDisconnect={mqttDisconnect}
-                    subscribeTopic={subscribeTopic}
-                    unsubscribeTopic={unsubscribeTopic}
-                />
-            </Profiler>
+            <MemoizedMyMqttClient
+                defaultHost={defaultHost}
+                defaultPort={defaultPort}
+                connectionStatus={connectionStatus}
+                mqttConnect={mqttConnect}
+                mqttDisconnect={mqttDisconnect}
+                subscribeTopic={subscribeTopic}
+                unsubscribeTopic={unsubscribeTopic}
+            />
             {message && <MqttMessageList msg={message} />}
         </>
     );

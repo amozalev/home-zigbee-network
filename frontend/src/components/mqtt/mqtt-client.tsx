@@ -227,32 +227,4 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
     );
 };
 
-function myMqttClientPropsAreEqual(
-    prev: MqttClientProps,
-    next: MqttClientProps
-) {
-    console.log(
-        '==equalProps',
-        prev.defaultHost === next.defaultHost,
-        prev.defaultPort === next.defaultPort,
-        prev.connectionStatus === next.connectionStatus,
-        prev.mqttConnect === next.mqttConnect,
-        prev.mqttDisconnect === next.mqttDisconnect,
-        prev.subscribeTopic === next.subscribeTopic,
-        prev.unsubscribeTopic === next.unsubscribeTopic
-    );
-    return (
-        prev.defaultHost === next.defaultHost &&
-        prev.defaultPort === next.defaultPort &&
-        prev.connectionStatus === next.connectionStatus &&
-        prev.mqttConnect === next.mqttConnect &&
-        prev.mqttDisconnect === next.mqttDisconnect &&
-        prev.subscribeTopic === next.subscribeTopic &&
-        prev.unsubscribeTopic === next.unsubscribeTopic
-    );
-}
-
-export const MemoizedMyMqttClient = React.memo(
-    MyMqttClient
-    // myMqttClientPropsAreEqual
-);
+export const MemoizedMyMqttClient = React.memo(MyMqttClient);
