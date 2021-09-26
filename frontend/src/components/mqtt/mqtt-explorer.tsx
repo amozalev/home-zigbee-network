@@ -6,9 +6,7 @@ import {
 } from './mqtt-client';
 import { Profiler, useCallback, useEffect, useRef, useState } from 'react';
 import { IConnectPacket, IPublishPacket } from 'mqtt-packet';
-import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { onRenderCallback } from '../../utils/utils';
-import { MqttMessageProps } from './mqtt-message';
 import MqttMessageList from './mqtt-message-list';
 import { MqttClient } from 'mqtt';
 import * as mqtt from 'mqtt';
@@ -39,7 +37,6 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     const [connectionStatus, setConnectStatus] = useState<ConnectionStatusType>(
         ConnectionStatusType.DISCONNECTED
     );
-    const [msgLst, setMessageLst] = useState<MqttMessageType[]>([]);
     const connAttempts = useRef<number>(0);
 
     const mqttConnect = useCallback((url: string, options: IClientOptions) => {
@@ -71,14 +68,14 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
 
         const onConnect = (packet: IConnectPacket) => {
             console.log('==onConnect');
-            // setConnectStatus(ConnectionStatusType.CONNECTED);
+            setConnectStatus(ConnectionStatusType.CONNECTED);
         };
 
         const onReconnect = () => {
             console.log('==onReconnect');
 
             connAttempts.current++;
-            // setConnectStatus(ConnectionStatusType.RECONNECTING);
+            setConnectStatus(ConnectionStatusType.RECONNECTING);
             if (topic) client?.unsubscribe(topic);
             if (connAttempts.current >= 10) {
                 client?.end();
@@ -96,13 +93,12 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
                 message: payload.toString()
             };
             console.log('==onMessage', msg);
-            // setMessage(msg);
-            setMessageLst((prevState) => [...prevState, msg]);
+            setMessage(msg);
         };
 
         const onError = (err: Error) => {
             client?.end();
-            setConnectStatus(ConnectionStatusType.DISCONNECTED);
+            // setConnectStatus(ConnectionStatusType.DISCONNECTED);
         };
 
         const onEnd = () => {
@@ -142,7 +138,7 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
                     unsubscribeTopic={unsubscribeTopic}
                 />
             </Profiler>
-            <MqttMessageList msgLst={msgLst} />
+            {message && <MqttMessageList msg={message} />}
         </>
     );
 };

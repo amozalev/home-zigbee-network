@@ -1,14 +1,18 @@
 import * as React from 'react';
-import * as mqtt from 'mqtt';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import {
     IClientOptions,
     IClientPublishOptions
 } from 'mqtt/types/lib/client-options';
-import { IConnectPacket, IPublishPacket } from 'mqtt-packet';
-import { MqttClient } from 'mqtt';
-import { Button, Divider, Form, Input } from 'antd';
+import { Button, Col, Divider, Form, Input, Row } from 'antd';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
+import {
+    CheckCircleFilled,
+    CloseCircleFilled,
+    CheckCircleTwoTone,
+    CloseCircleTwoTone,
+    SyncOutlined
+} from '@ant-design/icons';
 
 export interface MqttClientProps {
     defaultHost: string | undefined;
@@ -18,15 +22,6 @@ export interface MqttClientProps {
     mqttDisconnect: () => void;
     subscribeTopic: (topic: string) => void;
     unsubscribeTopic: (topic: string) => void;
-    // topic: string | undefined;
-    // newMessage: MqttMessageType | null;
-    // onConnectionChange: (
-    //     clientId: string,
-    //     connectionStatus: ConnectionStatusType,
-    //     err?: Error
-    // ) => void;
-    // onMessage: (topic: string, payload: Buffer, packet: IPublishPacket) => void;
-    // connect: (client: MqttClient) => void;
 }
 
 export interface MqttMessageType {
@@ -44,6 +39,7 @@ export enum ConnectionStatusType {
 export interface FormFieldsType {
     host: string;
     port: number;
+    path: string;
     connectionStatus: string;
     topic: string;
 }
@@ -57,19 +53,14 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
     subscribeTopic,
     unsubscribeTopic
 }: MqttClientProps) => {
-    const layout = {
-        labelCol: { span: 8, offset: 0 },
-        wrapperCol: { span: 16, offset: 0 }
-    };
-
     const [form] = Form.useForm<FormFieldsType>();
 
-    // useEffect(() => {
-    //     form.setFieldsValue({ connectionStatus });
-    // }, [connectionStatus]);
+    useEffect(() => {
+        form.setFieldsValue({ connectionStatus });
+    }, [connectionStatus]);
 
-    const onSubmit = ({ host, port, connectionStatus }: FormFieldsType) => {
-        const url = `ws://${host}:${port}/mqtt`;
+    const onSubmit = ({ host, port, path }: FormFieldsType) => {
+        const url = `ws://${host}:${port}${path}`;
         const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
         const options: IClientOptions = {
             // host: host,
@@ -96,7 +87,11 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
             //     retain: true
             // }
         };
-        mqttConnect(url, options);
+        if (connectionStatus == ConnectionStatusType.DISCONNECTED) {
+            mqttConnect(url, options);
+        } else if (connectionStatus == ConnectionStatusType.CONNECTED) {
+            mqttDisconnect();
+        }
     };
 
     const onTopicSubscription = (e: any) => {
@@ -107,15 +102,26 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
 
     const getConnectionStatusIcon = (
         connectionStatus: ConnectionStatusType
-    ): ValidateStatus => {
+    ): React.ReactNode => {
         const { CONNECTED, RECONNECTING, DISCONNECTED } = ConnectionStatusType;
+        const style = { fontSize: '26px' };
         switch (connectionStatus) {
             case CONNECTED:
-                return 'success';
+                return (
+                    <CheckCircleTwoTone twoToneColor="#52c41a" style={style} />
+                );
             case RECONNECTING:
-                return 'validating';
+                return (
+                    <SyncOutlined
+                        spin={true}
+                        twoToneColor="#eb2f96"
+                        style={style}
+                    />
+                );
             case DISCONNECTED:
-                return 'error';
+                return (
+                    <CloseCircleTwoTone twoToneColor="#eb2f96" style={style} />
+                );
         }
     };
     console.log('==Rerender=============');
@@ -123,7 +129,6 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
         <>
             <Divider orientation="left">MQTT Connection</Divider>
             <Form
-                {...layout}
                 form={form}
                 name="connectionForm"
                 layout={'inline'}
@@ -131,68 +136,92 @@ const MyMqttClient: React.FC<MqttClientProps> = ({
                 initialValues={{
                     host: defaultHost,
                     port: defaultPort,
+                    path: '/mqtt',
                     connectionStatus: ConnectionStatusType.DISCONNECTED,
                     topic: 'testyTestClient'
                 }}
             >
-                <Input.Group compact>
-                    <Form.Item
-                        name={'host'}
-                        label="Host"
-                        // rules={[{ required: true }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        wrapperCol={{ span: 6, offset: 0 }}
-                        name={'port'}
-                        label="Port"
-                        // rules={[{ required: true }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item
-                        labelCol={{ span: 0, offset: 0 }}
-                        wrapperCol={{ span: 35, offset: 0 }}
-                        name={'connectionStatus'}
-                        label="Status"
-                        hasFeedback
-                        // validateStatus={getConnectionStatusIcon(
-                        //     connectionStatus
-                        // )}
-                    >
-                        <Input disabled />
-                    </Form.Item>
-                    <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 0 }}>
-                        <Button type="primary" htmlType="submit">
-                            {/*{[*/}
-                            {/*    ConnectionStatusType.CONNECTED,*/}
-                            {/*    ConnectionStatusType.RECONNECTING*/}
-                            {/*].includes(connectionStatus as ConnectionStatusType)*/}
-                            {/*    ? 'Disconnect'*/}
-                            {/*    : 'Connect'}*/}
-                            Connect
-                        </Button>
-                    </Form.Item>
-                </Input.Group>
-                <Input.Group compact>
-                    <Form.Item
-                        name={'topic'}
-                        label="Topic"
-                        // rules={[{ required: true }]}
-                    >
-                        <Input />
-                    </Form.Item>
-                    <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 0 }}>
-                        <Button
-                            type="default"
-                            htmlType="button"
-                            onClick={onTopicSubscription}
+                <Row style={{ alignItems: 'center' }} gutter={[1, 6]}>
+                    <Col span={6}>
+                        <Form.Item
+                            name={'host'}
+                            label="Host"
+                            rules={[{ required: true }]}
                         >
-                            Submit
-                        </Button>
-                    </Form.Item>
-                </Input.Group>
+                            <Input
+                                disabled={
+                                    connectionStatus ==
+                                    ConnectionStatusType.CONNECTED
+                                }
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={4}>
+                        <Form.Item
+                            wrapperCol={{ span: 12, offset: 0 }}
+                            labelCol={{ span: 15, offset: 0 }}
+                            name={'port'}
+                            label="Port"
+                            rules={[{ required: true }]}
+                        >
+                            <Input
+                                disabled={
+                                    connectionStatus ==
+                                    ConnectionStatusType.CONNECTED
+                                }
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={4}>
+                        <Form.Item
+                            wrapperCol={{ span: 15, offset: 0 }}
+                            labelCol={{ span: 15, offset: 0 }}
+                            name={'path'}
+                            label="Path"
+                        >
+                            <Input
+                                disabled={
+                                    connectionStatus ==
+                                    ConnectionStatusType.CONNECTED
+                                }
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col>
+                        <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                                {[
+                                    ConnectionStatusType.CONNECTED,
+                                    ConnectionStatusType.RECONNECTING
+                                ].includes(
+                                    connectionStatus as ConnectionStatusType
+                                )
+                                    ? 'Disconnect'
+                                    : 'Connect'}
+                            </Button>
+                        </Form.Item>
+                    </Col>
+                    <Col>{getConnectionStatusIcon(connectionStatus)}</Col>
+                </Row>
+                <Divider orientation="left">Subscription</Divider>
+                <Row>
+                    <Col>
+                        <Form.Item name={'topic'} label="Topic">
+                            <Input />
+                        </Form.Item>
+                    </Col>
+                    <Col>
+                        <Form.Item>
+                            <Button
+                                type="primary"
+                                htmlType="button"
+                                onClick={onTopicSubscription}
+                            >
+                                Subscribe
+                            </Button>
+                        </Form.Item>
+                    </Col>
+                </Row>
             </Form>
         </>
     );
@@ -224,6 +253,6 @@ function myMqttClientPropsAreEqual(
 }
 
 export const MemoizedMyMqttClient = React.memo(
-    MyMqttClient,
-    myMqttClientPropsAreEqual
+    MyMqttClient
+    // myMqttClientPropsAreEqual
 );
