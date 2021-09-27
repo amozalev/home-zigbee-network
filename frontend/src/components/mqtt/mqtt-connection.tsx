@@ -37,6 +37,8 @@ export enum ConnectionStatusType {
 export interface FormFieldsType {
     host: string;
     port: number;
+    username: string;
+    password: string;
     path: string;
     connectionStatus: string;
     topic: string;
@@ -57,7 +59,13 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
         form.setFieldsValue({ connectionStatus });
     }, [connectionStatus]);
 
-    const onSubmit = ({ host, port, path }: FormFieldsType) => {
+    const onSubmit = ({
+        host,
+        port,
+        path,
+        username,
+        password
+    }: FormFieldsType) => {
         const url = `ws://${host}:${port}${path}`;
         const clientId = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
         const options: IClientOptions = {
@@ -67,6 +75,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
             // protocol: 'ws',
             clientId: clientId,
             keepalive: 60,
+            protocol: 'ws',
             protocolId: 'MQTT',
             protocolVersion: 4,
             clean: true,
@@ -85,6 +94,9 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
             //     retain: true
             // }
         };
+        options.username = username;
+        options.password = password;
+
         if (connectionStatus == ConnectionStatusType.DISCONNECTED) {
             mqttConnect(url, options);
         } else if (connectionStatus == ConnectionStatusType.CONNECTED) {
@@ -140,7 +152,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                 }}
             >
                 <Row style={{ alignItems: 'center' }} gutter={[1, 6]}>
-                    <Col span={6}>
+                    <Col span={8}>
                         <Form.Item
                             name={'host'}
                             label="Host"
@@ -154,7 +166,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={4}>
+                    <Col span={6}>
                         <Form.Item
                             wrapperCol={{ span: 12, offset: 0 }}
                             labelCol={{ span: 15, offset: 0 }}
@@ -170,7 +182,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                             />
                         </Form.Item>
                     </Col>
-                    <Col span={4}>
+                    <Col span={6}>
                         <Form.Item
                             wrapperCol={{ span: 15, offset: 0 }}
                             labelCol={{ span: 15, offset: 0 }}
@@ -178,6 +190,29 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                             label="Path"
                         >
                             <Input
+                                disabled={
+                                    connectionStatus ==
+                                    ConnectionStatusType.CONNECTED
+                                }
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row style={{ alignItems: 'center' }}>
+                    <Col span={9}>
+                        <Form.Item name={'user'} label="Username">
+                            <Input
+                                disabled={
+                                    connectionStatus ==
+                                    ConnectionStatusType.CONNECTED
+                                }
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={9}>
+                        <Form.Item name={'password'} label="Password">
+                            <Input
+                                type={'password'}
                                 disabled={
                                     connectionStatus ==
                                     ConnectionStatusType.CONNECTED
