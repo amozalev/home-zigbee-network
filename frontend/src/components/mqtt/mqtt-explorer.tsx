@@ -105,6 +105,7 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
 
             if (topic) client?.unsubscribe(topic);
             setConnectStatus(ConnectionStatusType.DISCONNECTED);
+            setMessage(null);
         };
 
         if (client) {
@@ -135,7 +136,7 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
                 subscribeTopic={subscribeTopic}
                 unsubscribeTopic={unsubscribeTopic}
             />
-            {message && <MqttMessageList msg={message} />}
+            <MqttMessageList msg={message} />
         </>
     );
 };
