@@ -16,10 +16,11 @@ export interface MqttClientProps {
     defaultHost: string | undefined;
     defaultPort: number | undefined;
     connectionStatus: ConnectionStatusType;
+    isSubscribed: boolean;
     mqttConnect: (url: string, options: IClientOptions) => void;
     mqttDisconnect: () => void;
     subscribeTopic: (topic: string) => void;
-    unsubscribeTopic: (topic: string) => void;
+    unsubscribeTopic: () => void;
 }
 
 export interface MqttMessageType {
@@ -48,6 +49,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
     defaultHost,
     defaultPort,
     connectionStatus,
+    isSubscribed,
     mqttConnect,
     mqttDisconnect,
     subscribeTopic,
@@ -110,6 +112,10 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
         if (topic) subscribeTopic(topic);
     };
 
+    const onTopicUnsubscription = (e: any) => {
+        unsubscribeTopic();
+    };
+
     const getConnectionStatusIcon = (
         connectionStatus: ConnectionStatusType
     ): React.ReactNode => {
@@ -134,6 +140,26 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                 );
         }
     };
+
+    const getSubscriptionBtn = (
+        isSubscribed: boolean,
+        onTopicSubscription: (e: any) => void,
+        onTopicUnsubscription: (e: any) => void
+    ) => {
+        return (
+            <Button
+                type="primary"
+                htmlType="button"
+                onClick={
+                    isSubscribed ? onTopicUnsubscription : onTopicSubscription
+                }
+                disabled={connectionStatus !== ConnectionStatusType.CONNECTED}
+            >
+                {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+            </Button>
+        );
+    };
+
     console.log('==Rerender=============');
     return (
         <>
@@ -240,18 +266,22 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                 <Row>
                     <Col>
                         <Form.Item name={'topic'} label="Topic">
-                            <Input />
+                            <Input
+                                disabled={
+                                    connectionStatus !==
+                                        ConnectionStatusType.CONNECTED ||
+                                    isSubscribed
+                                }
+                            />
                         </Form.Item>
                     </Col>
                     <Col>
                         <Form.Item>
-                            <Button
-                                type="primary"
-                                htmlType="button"
-                                onClick={onTopicSubscription}
-                            >
-                                Subscribe
-                            </Button>
+                            {getSubscriptionBtn(
+                                isSubscribed,
+                                onTopicSubscription,
+                                onTopicUnsubscription
+                            )}
                         </Form.Item>
                     </Col>
                 </Row>
