@@ -13,21 +13,18 @@ export const MQTT_TOPIC_SUBSCRIBE = 'mqtt/topic_subscribe';
 
 export const MQTT_TOPIC_UNSUBSCRIBE = 'mqtt/topic_unsubscribe';
 
-export const disconnectAction = (
-    connectionStatus: ConnectionStatusType,
-    message: string | null = null,
-    topic: string | null = null
-) => action(MQTT_DISCONNECT, { connectionStatus, topic, message });
+export const disconnect = (connectionStatus: ConnectionStatusType) =>
+    action(MQTT_DISCONNECT, { connectionStatus });
 
 export const addMessage = (message: MqttMessageType) =>
     action(MQTT_ADD_MESSAGE, { message });
 
-export const updateConnectionStatusAction = (
+export const updateConnectionStatus = (
     connectionStatus: ConnectionStatusType
 ) => action(MQTT_SET_CONNECTION_STATUS, { connectionStatus });
 
-export const subscribeTopicAction = (topic: string) =>
+export const subscribe = (topic: string) =>
     action(MQTT_TOPIC_SUBSCRIBE, { topic });
 
-export const unsubscribeTopicAction = (topic: string | null = null) =>
+export const unsubscribe = (topic: string | null = null) =>
     action(MQTT_TOPIC_UNSUBSCRIBE, { topic, message: null });

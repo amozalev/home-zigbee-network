@@ -41,7 +41,7 @@ export const reducer = (
                 ...state,
                 connectionStatus: action.payload.connectionStatus,
                 topic: action.payload.topic,
-                message: action.payload.message
+                messages: []
             };
         case MQTT_SET_CONNECTION_STATUS:
             return {
