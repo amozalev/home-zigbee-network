@@ -5,24 +5,14 @@ import { Divider } from 'antd';
 import { useEffect, useState } from 'react';
 
 export interface MqttMessageListProps {
-    msg: MqttMessageType | null;
+    messages: MqttMessageType[];
 }
 
-const MqttMessageList: React.FC<MqttMessageListProps> = ({ msg }) => {
-    const [msgLst, setMessageLst] = useState<MqttMessageType[]>([]);
-
-    useEffect(() => {
-        if (msg) {
-            setMessageLst((prevState) => [...prevState, msg]);
-        } else {
-            setMessageLst([]);
-        }
-    }, [msg]);
-
+const MqttMessageList: React.FC<MqttMessageListProps> = ({ messages }) => {
     return (
         <>
             <Divider orientation="left">Results</Divider>
-            {msgLst.map((el, ind) => (
+            {messages.map((el, ind) => (
                 <Message msg={el} key={ind} />
             ))}
         </>

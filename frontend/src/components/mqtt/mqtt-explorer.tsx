@@ -4,13 +4,20 @@ import {
     MemoMqttConnectionForm,
     MqttMessageType
 } from './mqtt-connection';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { IConnectPacket, IPublishPacket } from 'mqtt-packet';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { IConnectPacket, IPublishPacket, Packet } from 'mqtt-packet';
 import MqttMessageList from './mqtt-message-list';
 import { MqttClient } from 'mqtt';
 import * as mqtt from 'mqtt';
 import { IClientOptions } from 'mqtt/types/lib/client-options';
 import { ISubscriptionGrant } from 'mqtt/types/lib/client';
+import * as mqttReducer from './mqtt-reducer';
+import * as actions from './mqtt-actions';
+import {
+    subscribeTopicAction,
+    unsubscribeTopicAction,
+    updateConnectionStatusAction
+} from './mqtt-actions';
 
 export interface MqttExplorerProps {
     defaultHost?: string | undefined;
@@ -21,20 +28,10 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     defaultHost,
     defaultPort
 }) => {
-    const [hostPort, setHostPort] = useState<{
-        host: string | undefined;
-        port: number | undefined;
-    }>({
-        host: undefined,
-        port: undefined
-    });
     const [client, setClient] = useState<MqttClient | null>(null);
-    const [message, setMessage] = useState<MqttMessageType | null>(null);
-    const [newMessage, setNewMessage] = useState<MqttMessageType | null>(null);
-    const [subscribedTopic, setTopic] = useState<string | null>(null);
-    const [clientId, setClientId] = useState<string>('');
-    const [connectionStatus, setConnectStatus] = useState<ConnectionStatusType>(
-        ConnectionStatusType.DISCONNECTED
+    const [state, dispatch] = useReducer(
+        mqttReducer.reducer,
+        mqttReducer.initialState
     );
     const connAttempts = useRef<number>(0);
 
@@ -56,24 +53,28 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     );
 
     const unsubscribeTopic = useCallback(() => {
-        console.log('==unsubscribeTopic', subscribedTopic);
-        if (client && subscribedTopic) client?.unsubscribe(subscribedTopic);
-        setTopic(null);
-    }, [client, subscribedTopic]);
+        console.log('==unsubscribeTopic', state.topic);
+        if (client && state.topic)
+            client?.unsubscribe(state.topic, onTopicUnsubscription);
+    }, [client, state.topic]);
 
     useEffect(() => {
         console.log('==useEffect');
 
         const onConnect = (packet: IConnectPacket) => {
             console.log('==onConnect');
-            setConnectStatus(ConnectionStatusType.CONNECTED);
+            dispatch(
+                updateConnectionStatusAction(ConnectionStatusType.CONNECTED)
+            );
         };
 
         const onReconnect = () => {
             console.log('==onReconnect');
 
             connAttempts.current++;
-            setConnectStatus(ConnectionStatusType.RECONNECTING);
+            dispatch(
+                updateConnectionStatusAction(ConnectionStatusType.RECONNECTING)
+            );
             if (connAttempts.current >= 2) {
                 client?.end();
                 connAttempts.current = 0;
@@ -90,21 +91,18 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
                 message: payload.toString()
             };
             console.log('==onMessage', msg);
-            setMessage(msg);
+            dispatch(actions.addMessage(msg));
         };
 
         const onError = (err: Error) => {
             client?.end();
-            // setConnectStatus(ConnectionStatusType.DISCONNECTED);
         };
 
         const onEnd = () => {
             console.log('==onEnd');
-            if (subscribedTopic) client?.unsubscribe(subscribedTopic);
-            //TODO should be simplified. useReducer?
-            setConnectStatus(ConnectionStatusType.DISCONNECTED);
-            setMessage(null);
-            setTopic(null);
+            dispatch(
+                actions.disconnectAction(ConnectionStatusType.DISCONNECTED)
+            );
         };
 
         if (client) {
@@ -123,7 +121,11 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     const onTopicSubscription = (err: Error, granted: ISubscriptionGrant[]) => {
         console.log('==subscribed', granted);
         //TODO temporarily used 1st array element
-        setTopic(granted[0].topic);
+        dispatch(subscribeTopicAction(granted[0].topic));
+    };
+
+    const onTopicUnsubscription = (error?: Error, packet?: Packet) => {
+        dispatch(unsubscribeTopicAction());
     };
 
     return (
@@ -131,14 +133,14 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
             <MemoMqttConnectionForm
                 defaultHost={defaultHost}
                 defaultPort={defaultPort}
-                connectionStatus={connectionStatus}
-                isSubscribed={!!subscribedTopic}
+                connectionStatus={state.connectionStatus}
+                isSubscribed={!!state.topic}
                 mqttConnect={mqttConnect}
                 mqttDisconnect={mqttDisconnect}
                 subscribeTopic={subscribeTopic}
                 unsubscribeTopic={unsubscribeTopic}
             />
-            <MqttMessageList msg={message} />
+            <MqttMessageList messages={state.messages} />
         </>
     );
 };
