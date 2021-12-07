@@ -1,8 +1,7 @@
 import * as React from 'react';
 import Layout, { Content } from 'antd/lib/layout/layout';
 import MqttExplorer from '../components/mqtt/mqtt-explorer';
-import { Breadcrumb, Menu } from 'antd';
-import 'antd/dist/antd.css';
+import { Breadcrumb } from 'antd';
 import './home.css';
 import SideMenu from '../components/side-menu';
 import PageHeader from '../components/page-header';
