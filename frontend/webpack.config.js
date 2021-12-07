@@ -35,13 +35,13 @@ module.exports = {
                         loader: 'style-loader'
                     },
                     {
-                        loader: 'css-loader',
+                        loader: 'css-loader'
                         // options: {
                         //     modules: true,
                         //     importLoaders: 1
                         // },
                     }
-                ],
+                ]
             },
             {
                 test: /\.less$/,
@@ -77,7 +77,7 @@ module.exports = {
         // new webpack.HotModuleReplacementPlugin(),
     ],
     devServer: {
-        host: 'localhost',
+        host: '0.0.0.0',
         port: port,
         historyApiFallback: true,
         open: true,
