@@ -2,12 +2,22 @@ version: '3'
 
 services:
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_PORT=3000
+        - REACT_APP_MQTT_BROKER=localhost
+        - REACT_APP_MQTT_PORT=1883
+        - REACT_APP_MQTT_WEBSOCKET_PORT=9001
     container_name: home-zigbee-network-frontend
     ports:
-      - "3000:3000"
+      - "3001:3000"
     restart: unless-stopped
+    stdin_open: true
+    tty: true
     command: npm run start
+    volumes:
+      - ./frontend/src:/usr/src/app/src
   mosquitto:
     image: eclipse-mosquitto:latest
     container_name: home-zigbee-network-mosquitto

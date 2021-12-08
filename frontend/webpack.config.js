@@ -73,7 +73,13 @@ module.exports = {
             template: './public/index.html',
             favicon: './public/favicon.ico'
         }),
-        new BundleAnalyzerPlugin()
+        new BundleAnalyzerPlugin(),
+        new webpack.DefinePlugin({
+            "process.env.REACT_APP_PORT": JSON.stringify(process.env.REACT_APP_PORT),
+            "process.env.REACT_APP_MQTT_BROKER": JSON.stringify(process.env.REACT_APP_MQTT_BROKER),
+            "process.env.REACT_APP_MQTT_PORT": JSON.stringify(process.env.REACT_APP_MQTT_PORT),
+            "process.env.REACT_APP_MQTT_WEBSOCKET_PORT": JSON.stringify(process.env.REACT_APP_MQTT_WEBSOCKET_PORT),
+        }),
         // new webpack.HotModuleReplacementPlugin(),
     ],
     devServer: {
