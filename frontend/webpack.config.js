@@ -29,30 +29,96 @@ module.exports = {
                 use: ['babel-loader']
             },
             {
-                test: /\.css$/,
+                test: /\.less$/,
+                include: [/src/],
                 use: [
+                    require.resolve('style-loader'),
                     {
-                        loader: 'style-loader'
+                        loader: require.resolve('css-loader'),
+                        options: {
+                            modules: {
+                                localIdentName:
+                                    '[name]__[local]___[hash:base64:5]'
+                            },
+                            sourceMap: true
+                        }
                     },
                     {
-                        loader: 'css-loader'
-                        // options: {
-                        //     modules: true,
-                        //     importLoaders: 1
-                        // },
+                        loader: require.resolve('less-loader'), // compiles Less to CSS
+                        options: { lessOptions: { javascriptEnabled: true } }
                     }
                 ]
             },
             {
-                test: /\.less$/,
+                test: /\.css$/,
+                exclude: /node_modules|antd\.css/,
                 use: [
-                    { loader: 'style-loader' },
-                    { loader: 'css-loader' },
+                    require.resolve('style-loader'),
                     {
-                        loader: 'less-loader'
-                        // options: {
-                        //     modifyVars: themeVariables
-                        // }
+                        loader: require.resolve('css-loader'),
+                        options: {
+                            importLoaders: 1,
+                            modules: {
+                                localIdentName:
+                                    '[name]__[local]___[hash:base64:5]'
+                            }
+                        }
+                    },
+                    {
+                        loader: require.resolve('postcss-loader'),
+                        options: {
+                            // ident: 'postcss',
+                            postcssOptions: {
+                                plugins: () => [
+                                    require('postcss-flexbugs-fixes'),
+                                    autoprefixer({
+                                        browsers: [
+                                            '>1%',
+                                            'last 4 versions',
+                                            'Firefox ESR',
+                                            'not ie < 9' // React doesn't support IE8 anyway
+                                        ],
+                                        flexbox: 'no-2009'
+                                    })
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.css$/,
+                include: /node_modules|antd\.css/,
+                use: [
+                    require.resolve('style-loader'),
+                    {
+                        loader: require.resolve('css-loader'),
+                        options: {
+                            importLoaders: 1
+                            // change
+                            // modules: true, // new support for css modules
+                            // localIndetName: '[name]__[local]__[hash:base64:5]', //
+                        }
+                    },
+                    {
+                        loader: require.resolve('postcss-loader'),
+                        options: {
+                            // ident: 'postcss',
+                            postcssOptions: {
+                                plugins: () => [
+                                    require('postcss-flexbugs-fixes'),
+                                    autoprefixer({
+                                        browsers: [
+                                            '>1%',
+                                            'last 4 versions',
+                                            'Firefox ESR',
+                                            'not ie < 9' // React doesn't support IE8 anyway
+                                        ],
+                                        flexbox: 'no-2009'
+                                    })
+                                ]
+                            }
+                        }
                     }
                 ]
             },
@@ -75,11 +141,19 @@ module.exports = {
         }),
         new BundleAnalyzerPlugin(),
         new webpack.DefinePlugin({
-            "process.env.REACT_APP_PORT": JSON.stringify(process.env.REACT_APP_PORT),
-            "process.env.REACT_APP_MQTT_BROKER": JSON.stringify(process.env.REACT_APP_MQTT_BROKER),
-            "process.env.REACT_APP_MQTT_PORT": JSON.stringify(process.env.REACT_APP_MQTT_PORT),
-            "process.env.REACT_APP_MQTT_WEBSOCKET_PORT": JSON.stringify(process.env.REACT_APP_MQTT_WEBSOCKET_PORT),
-        }),
+            'process.env.REACT_APP_PORT': JSON.stringify(
+                process.env.REACT_APP_PORT
+            ),
+            'process.env.REACT_APP_MQTT_BROKER': JSON.stringify(
+                process.env.REACT_APP_MQTT_BROKER
+            ),
+            'process.env.REACT_APP_MQTT_PORT': JSON.stringify(
+                process.env.REACT_APP_MQTT_PORT
+            ),
+            'process.env.REACT_APP_MQTT_WEBSOCKET_PORT': JSON.stringify(
+                process.env.REACT_APP_MQTT_WEBSOCKET_PORT
+            )
+        })
         // new webpack.HotModuleReplacementPlugin(),
     ],
     devServer: {
