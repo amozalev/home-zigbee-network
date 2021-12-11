@@ -2,8 +2,8 @@ import * as React from 'react';
 import Layout, { Content } from 'antd/lib/layout/layout';
 import MqttExplorer from '../components/mqtt/mqtt-explorer';
 import { Breadcrumb } from 'antd';
-import './home.css';
-import SideMenu from '../components/side-menu';
+import style from './home.css'
+import SideMenu from '../components/side-menu/side-menu';
 import PageHeader from '../components/page-header';
 
 const HomePage: React.FC<any> = () => {
@@ -19,7 +19,7 @@ const HomePage: React.FC<any> = () => {
                         <Breadcrumb.Item>App</Breadcrumb.Item>
                     </Breadcrumb>
                     <Content
-                        className="site-layout-background"
+                        className={style.siteLayoutBackground}
                         style={{
                             padding: 24,
                             margin: 0,

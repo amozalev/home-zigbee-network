@@ -16,5 +16,10 @@
 }
 
 .site-layout-background {
-    background: #fff;
+    background: red;
+    padding: 30px;
+}
+
+.ant-layout {
+    background: red;
 }

@@ -30,11 +30,11 @@ module.exports = {
             },
             {
                 test: /\.less$/,
-                include: [/src/],
+                include: /src/,
                 use: [
-                    require.resolve('style-loader'),
+                    'style-loader',
                     {
-                        loader: require.resolve('css-loader'),
+                        loader: 'css-loader',
                         options: {
                             modules: {
                                 localIdentName:
@@ -44,33 +44,40 @@ module.exports = {
                         }
                     },
                     {
-                        loader: require.resolve('less-loader'), // compiles Less to CSS
+                        loader: 'less-loader', // compiles Less to CSS
                         options: { lessOptions: { javascriptEnabled: true } }
                     }
                 ]
             },
+            // {
+            //     test: /\.css$/,
+            //     exclude: /node_modules|antd\.css/,
+            //     loader: 'typings-for-css-modules-loader?modules&namedExport&camelCase'
+            // },
             {
                 test: /\.css$/,
                 exclude: /node_modules|antd\.css/,
+                //include: /src/,
                 use: [
-                    require.resolve('style-loader'),
+                    'style-loader',
                     {
-                        loader: require.resolve('css-loader'),
+                        loader: 'css-loader',
                         options: {
                             importLoaders: 1,
-                            modules: {
-                                localIdentName:
-                                    '[name]__[local]___[hash:base64:5]'
-                            }
+                            modules: true,
+                            localIdentName: '[name]_[local]_[hash:base64]',
+                            sourceMap: true,
+                            camelCase: true,
+                            namedExport: true
                         }
                     },
                     {
-                        loader: require.resolve('postcss-loader'),
+                        loader: 'postcss-loader',
                         options: {
                             // ident: 'postcss',
                             postcssOptions: {
                                 plugins: () => [
-                                    require('postcss-flexbugs-fixes'),
+                                    'postcss-flexbugs-fixes',
                                     autoprefixer({
                                         browsers: [
                                             '>1%',
@@ -90,23 +97,26 @@ module.exports = {
                 test: /\.css$/,
                 include: /node_modules|antd\.css/,
                 use: [
-                    require.resolve('style-loader'),
+                    'style-loader',
                     {
-                        loader: require.resolve('css-loader'),
+                        loader: 'css-loader',
                         options: {
                             importLoaders: 1
                             // change
                             // modules: true, // new support for css modules
-                            // localIndetName: '[name]__[local]__[hash:base64:5]', //
+                            // modules: {
+                            //     localIdentName:
+                            //       '[name]__[local]___[hash:base64:5]'
+                            // }
                         }
                     },
                     {
-                        loader: require.resolve('postcss-loader'),
+                        loader: 'postcss-loader',
                         options: {
                             // ident: 'postcss',
                             postcssOptions: {
                                 plugins: () => [
-                                    require('postcss-flexbugs-fixes'),
+                                    'postcss-flexbugs-fixes',
                                     autoprefixer({
                                         browsers: [
                                             '>1%',
@@ -125,8 +135,8 @@ module.exports = {
             {
                 test: /\.html$/,
                 use: 'html-loader',
-                include: [/src/],
-                exclude: [/node_modules/]
+                include: /src/,
+                exclude: /node_modules/
             },
             {
                 test: /\.svg$/,
@@ -153,14 +163,14 @@ module.exports = {
             'process.env.REACT_APP_MQTT_WEBSOCKET_PORT': JSON.stringify(
                 process.env.REACT_APP_MQTT_WEBSOCKET_PORT
             )
-        })
-        // new webpack.HotModuleReplacementPlugin(),
+        }),
+        new webpack.HotModuleReplacementPlugin()
     ],
     devServer: {
         host: '0.0.0.0',
         port: port,
         historyApiFallback: true,
-        open: true,
+        // open: true,
         hot: true
     },
     resolve: {
