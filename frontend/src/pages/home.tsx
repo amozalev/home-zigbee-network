@@ -8,6 +8,8 @@ import PageHeader from '../components/page-header';
 
 const HomePage: React.FC<any> = () => {
     return (
+      <div className={style.siteLayoutBackground} >
+        Test div
         <Layout>
             <PageHeader />
             <Layout>
@@ -36,6 +38,7 @@ const HomePage: React.FC<any> = () => {
                 </Layout>
             </Layout>
         </Layout>
+      </div>
     );
 };
 
