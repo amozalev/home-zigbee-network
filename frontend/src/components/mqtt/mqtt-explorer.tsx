@@ -28,6 +28,7 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
         mqttReducer.reducer,
         mqttReducer.initialState
     );
+    const { topic, connectionStatus, messages } = state;
     const connAttempts = useRef<number>(0);
 
     const mqttConnect = useCallback((url: string, options: IClientOptions) => {
@@ -48,10 +49,9 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     );
 
     const unsubscribeTopic = useCallback(() => {
-        console.log('==unsubscribeTopic', state.topic);
-        if (client && state.topic)
-            client?.unsubscribe(state.topic, onTopicUnsubscription);
-    }, [client, state.topic]);
+        console.log('==unsubscribeTopic', topic);
+        if (client && topic) client?.unsubscribe(topic, onTopicUnsubscription);
+    }, [client, topic]);
 
     useEffect(() => {
         console.log('==useEffect');
@@ -128,14 +128,14 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
             <MemoMqttConnectionForm
                 defaultHost={defaultHost}
                 defaultPort={defaultPort}
-                connectionStatus={state.connectionStatus}
-                isSubscribed={!!state.topic}
+                connectionStatus={connectionStatus}
+                isSubscribed={!!topic}
                 mqttConnect={mqttConnect}
                 mqttDisconnect={mqttDisconnect}
                 subscribeTopic={subscribeTopic}
                 unsubscribeTopic={unsubscribeTopic}
             />
-            <MqttMessageList messages={state.messages} />
+            <MqttMessageList messages={messages} />
         </>
     );
 };
