@@ -2,14 +2,12 @@ import * as React from 'react';
 import Layout, { Content } from 'antd/lib/layout/layout';
 import MqttExplorer from '../components/mqtt/mqtt-explorer';
 import { Breadcrumb } from 'antd';
-import style from './home.css'
+import style from './home.css';
 import SideMenu from '../components/side-menu/side-menu';
 import PageHeader from '../components/page-header';
 
 const HomePage: React.FC<any> = () => {
     return (
-      <div className={style.siteLayoutBackground} >
-        Test div
         <Layout>
             <PageHeader />
             <Layout>
@@ -38,7 +36,6 @@ const HomePage: React.FC<any> = () => {
                 </Layout>
             </Layout>
         </Layout>
-      </div>
     );
 };
 
