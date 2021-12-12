@@ -19,13 +19,12 @@ services:
     volumes:
       - ./frontend/src:/usr/src/app/src
   mosquitto:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:1.6.12
     container_name: home-zigbee-network-mosquitto
     restart: unless-stopped
-#    expose:
-#      - "1883"
     ports:
-      - "1983:1883"
+      - "1883:1883"
+      - "8083:8083"
       - "9001:9001"
     volumes:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
