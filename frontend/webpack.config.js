@@ -164,14 +164,16 @@ module.exports = {
                 process.env.REACT_APP_MQTT_WEBSOCKET_PORT
             )
         }),
-        new webpack.HotModuleReplacementPlugin()
     ],
     devServer: {
         host: '0.0.0.0',
         port: port,
         historyApiFallback: true,
-        // open: true,
-        hot: true
+        hot: true,
+        watchOptions: {
+            aggregateTimeout: 0,
+            poll: 1000
+        },
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx', '.json', '.css', '.html'],

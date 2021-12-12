@@ -11,7 +11,7 @@ services:
         - REACT_APP_MQTT_WEBSOCKET_PORT=9001
     container_name: home-zigbee-network-frontend
     ports:
-      - "3001:3000"
+      - "3000:3000"
     restart: unless-stopped
     stdin_open: true
     tty: true
