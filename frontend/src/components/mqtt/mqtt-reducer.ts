@@ -1,12 +1,5 @@
 import { ConnectionStatusType, MqttMessageType } from './mqtt-connection';
-import {
-    MQTT_ADD_MESSAGE,
-    MQTT_DISCONNECT,
-    MQTT_SET_CONNECTION_STATUS,
-    MQTT_TOPIC_SUBSCRIBE,
-    MQTT_TOPIC_UNSUBSCRIBE
-} from './mqtt-actions';
-import { PayloadAction } from 'typesafe-actions';
+import { Reducer } from 'react';
 
 export interface State {
     messages: MqttMessageType[];
@@ -20,38 +13,60 @@ export const initialState: State = {
     topic: null
 };
 
-export const reducer = (
-    state = initialState,
-    action: PayloadAction<any, any>
-) => {
+export type ActionTypes =
+    | 'disconnect'
+    | 'setConnectionStatus'
+    | 'addMessage'
+    | 'topicSubscribe'
+    | 'topicUnsubscribe';
+
+export interface ActionBase<TType extends ActionTypes, TPayload> {
+    type: TType;
+    payload: TPayload;
+}
+
+export type Action =
+    | ActionBase<'disconnect', { connectionStatus: ConnectionStatusType }>
+    | ActionBase<
+          'setConnectionStatus',
+          { connectionStatus: ConnectionStatusType }
+      >
+    | ActionBase<'addMessage', { message: MqttMessageType }>
+    | ActionBase<'topicSubscribe', { topic: string }>
+    | ActionBase<'topicUnsubscribe', { topic: string | null }>;
+
+export const reducer: Reducer<State, Action> = (
+    state: State,
+    action: Action
+): State => {
     switch (action.type) {
-        case MQTT_TOPIC_SUBSCRIBE:
-            return {
-                ...state,
-                topic: action.payload.topic
-            };
-        case MQTT_TOPIC_UNSUBSCRIBE:
-            return {
-                ...state,
-                topic: action.payload.topic,
-                message: action.payload.message
-            };
-        case MQTT_DISCONNECT:
+        case 'disconnect':
             return {
                 ...state,
                 connectionStatus: action.payload.connectionStatus,
-                topic: action.payload.topic,
+                // topic: action.payload.topic,
                 messages: []
             };
-        case MQTT_SET_CONNECTION_STATUS:
+        case 'setConnectionStatus':
             return {
                 ...state,
                 connectionStatus: action.payload.connectionStatus
             };
-        case MQTT_ADD_MESSAGE:
+        case 'addMessage':
             return {
                 ...state,
                 messages: [...state.messages, action.payload.message]
+            };
+        case 'topicSubscribe':
+            return {
+                ...state,
+                topic: action.payload.topic
+            };
+        case 'topicUnsubscribe':
+            return {
+                ...state,
+                topic: action.payload.topic,
+                messages: []
             };
         default:
             return state;

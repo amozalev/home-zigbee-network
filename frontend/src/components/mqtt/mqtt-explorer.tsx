@@ -12,7 +12,6 @@ import * as mqtt from 'mqtt';
 import { IClientOptions } from 'mqtt/types/lib/client-options';
 import { ISubscriptionGrant } from 'mqtt/types/lib/client';
 import * as mqttReducer from './mqtt-reducer';
-import * as actions from './mqtt-actions';
 
 export interface MqttExplorerProps {
     defaultHost?: string | undefined;
@@ -58,20 +57,20 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
 
         const onConnect = (packet: IConnectPacket) => {
             console.log('==onConnect');
-            dispatch(
-                actions.updateConnectionStatus(ConnectionStatusType.CONNECTED)
-            );
+            dispatch({
+                type: 'setConnectionStatus',
+                payload: { connectionStatus: ConnectionStatusType.CONNECTED }
+            });
         };
 
         const onReconnect = () => {
             console.log('==onReconnect');
 
             connAttempts.current++;
-            dispatch(
-                actions.updateConnectionStatus(
-                    ConnectionStatusType.RECONNECTING
-                )
-            );
+            dispatch({
+                type: 'setConnectionStatus',
+                payload: { connectionStatus: ConnectionStatusType.RECONNECTING }
+            });
             if (connAttempts.current >= 2) {
                 client?.end();
                 connAttempts.current = 0;
@@ -83,12 +82,15 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
             payload: Buffer,
             packet: IPublishPacket
         ): void => {
-            const msg: MqttMessageType = {
+            const message: MqttMessageType = {
                 topic,
                 message: payload.toString()
             };
-            console.log('==onMessage', msg);
-            dispatch(actions.addMessage(msg));
+            console.log('==onMessage', message);
+            dispatch({
+                type: 'addMessage',
+                payload: { message }
+            });
         };
 
         const onError = (err: Error) => {
@@ -97,7 +99,10 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
 
         const onEnd = () => {
             console.log('==onEnd');
-            dispatch(actions.disconnect(ConnectionStatusType.DISCONNECTED));
+            dispatch({
+                type: 'disconnect',
+                payload: { connectionStatus: ConnectionStatusType.DISCONNECTED }
+            });
         };
 
         if (client) {
@@ -116,11 +121,14 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     const onTopicSubscription = (err: Error, granted: ISubscriptionGrant[]) => {
         console.log('==subscribed', granted);
         //TODO temporarily used 1st array element
-        dispatch(actions.subscribe(granted[0].topic));
+        dispatch({
+            type: 'topicSubscribe',
+            payload: { topic: granted[0].topic }
+        });
     };
 
     const onTopicUnsubscription = (error?: Error, packet?: Packet) => {
-        dispatch(actions.unsubscribe());
+        dispatch({ type: 'topicUnsubscribe', payload: { topic: null } });
     };
 
     return (
