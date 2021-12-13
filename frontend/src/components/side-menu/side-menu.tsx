@@ -7,12 +7,9 @@ import {
     NotificationOutlined,
     UserOutlined
 } from '@ant-design/icons';
-import style from './side-menu.css';
-
 
 const SideMenu: React.FC<any> = () => {
     return (
-      <div className={style.siteLayoutBackground} >
         <Sider width={200}>
             <Menu
                 mode="inline"
@@ -32,7 +29,6 @@ const SideMenu: React.FC<any> = () => {
                 </SubMenu>
             </Menu>
         </Sider>
-      </div>
     );
 };
 
