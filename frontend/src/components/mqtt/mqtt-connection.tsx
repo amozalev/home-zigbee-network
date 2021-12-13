@@ -11,6 +11,7 @@ import {
     CloseCircleTwoTone,
     SyncOutlined
 } from '@ant-design/icons';
+import 'antd/dist/antd.css';
 
 export interface MqttClientProps {
     defaultHost: string | undefined;
@@ -167,7 +168,9 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
             <Form
                 form={form}
                 name="connectionForm"
-                layout={'inline'}
+                layout={'horizontal'}
+                labelCol={{ span: 4, offset: 0 }}
+                wrapperCol={{ span: 13 }}
                 onFinish={onSubmit}
                 initialValues={{
                     host: defaultHost,
@@ -177,8 +180,8 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                     topic: 'testyTestClient'
                 }}
             >
-                <Row style={{ alignItems: 'center' }} gutter={[1, 6]}>
-                    <Col span={8}>
+                <Row>
+                    <Col flex="400px">
                         <Form.Item
                             name={'host'}
                             label="Host"
@@ -191,11 +194,9 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                                 }
                             />
                         </Form.Item>
-                    </Col>
-                    <Col span={6}>
                         <Form.Item
-                            wrapperCol={{ span: 12, offset: 0 }}
-                            labelCol={{ span: 15, offset: 0 }}
+                            // wrapperCol={{ span: 12, offset: 0 }}
+                            // labelCol={{ span: 15, offset: 0 }}
                             name={'port'}
                             label="Port"
                             rules={[{ required: true }]}
@@ -207,11 +208,9 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                                 }
                             />
                         </Form.Item>
-                    </Col>
-                    <Col span={6}>
                         <Form.Item
-                            wrapperCol={{ span: 15, offset: 0 }}
-                            labelCol={{ span: 15, offset: 0 }}
+                            // wrapperCol={{ span: 15, offset: 0 }}
+                            // labelCol={{ span: 15, offset: 0 }}
                             name={'path'}
                             label="Path"
                         >
@@ -222,10 +221,6 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                                 }
                             />
                         </Form.Item>
-                    </Col>
-                </Row>
-                <Row style={{ alignItems: 'center' }}>
-                    <Col span={9}>
                         <Form.Item name={'user'} label="Username">
                             <Input
                                 disabled={
@@ -234,8 +229,6 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                                 }
                             />
                         </Form.Item>
-                    </Col>
-                    <Col span={9}>
                         <Form.Item name={'password'} label="Password">
                             <Input
                                 type={'password'}
@@ -245,9 +238,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                                 }
                             />
                         </Form.Item>
-                    </Col>
-                    <Col>
-                        <Form.Item>
+                        <Form.Item wrapperCol={{ span: 16, offset: 4 }}>
                             <Button type="primary" htmlType="submit">
                                 {[
                                     ConnectionStatusType.CONNECTED,
@@ -258,13 +249,9 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                                     ? 'Disconnect'
                                     : 'Connect'}
                             </Button>
+                            {getConnectionStatusIcon(connectionStatus)}
                         </Form.Item>
-                    </Col>
-                    <Col>{getConnectionStatusIcon(connectionStatus)}</Col>
-                </Row>
-                <Divider orientation="left">Subscription</Divider>
-                <Row>
-                    <Col>
+                        <Divider orientation="left">Subscription</Divider>
                         <Form.Item name={'topic'} label="Topic">
                             <Input
                                 disabled={
@@ -274,8 +261,6 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                                 }
                             />
                         </Form.Item>
-                    </Col>
-                    <Col>
                         <Form.Item>
                             {getSubscriptionBtn(
                                 isSubscribed,
@@ -284,6 +269,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                             )}
                         </Form.Item>
                     </Col>
+                    <Col flex="auto">Test right column</Col>
                 </Row>
             </Form>
         </>
