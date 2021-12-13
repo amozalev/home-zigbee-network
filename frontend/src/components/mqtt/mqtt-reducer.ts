@@ -44,7 +44,7 @@ export const reducer: Reducer<State, Action> = (
             return {
                 ...state,
                 connectionStatus: action.payload.connectionStatus,
-                // topic: action.payload.topic,
+                topic: null,
                 messages: []
             };
         case 'setConnectionStatus':
