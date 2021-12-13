@@ -1,0 +1,8 @@
+.divider-span {
+    display: flex;
+}
+
+.divider-span-icon {
+    font-size: 26px;
+    padding: 0 10px;
+}

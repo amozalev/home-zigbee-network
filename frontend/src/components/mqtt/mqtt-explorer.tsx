@@ -12,6 +12,7 @@ import * as mqtt from 'mqtt';
 import { IClientOptions } from 'mqtt/types/lib/client-options';
 import { ISubscriptionGrant } from 'mqtt/types/lib/client';
 import * as mqttReducer from './mqtt-reducer';
+import { Col, Row } from 'antd';
 
 export interface MqttExplorerProps {
     defaultHost?: string | undefined;
@@ -133,17 +134,23 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
 
     return (
         <>
-            <MemoMqttConnectionForm
-                defaultHost={defaultHost}
-                defaultPort={defaultPort}
-                connectionStatus={connectionStatus}
-                isSubscribed={!!topic}
-                mqttConnect={mqttConnect}
-                mqttDisconnect={mqttDisconnect}
-                subscribeTopic={subscribeTopic}
-                unsubscribeTopic={unsubscribeTopic}
-            />
-            <MqttMessageList messages={messages} />
+            <Row>
+                <Col flex="400px">
+                    <MemoMqttConnectionForm
+                        defaultHost={defaultHost}
+                        defaultPort={defaultPort}
+                        connectionStatus={connectionStatus}
+                        isSubscribed={!!topic}
+                        mqttConnect={mqttConnect}
+                        mqttDisconnect={mqttDisconnect}
+                        subscribeTopic={subscribeTopic}
+                        unsubscribeTopic={unsubscribeTopic}
+                    />
+                </Col>
+                <Col flex="auto">
+                    <MqttMessageList messages={messages} />
+                </Col>
+            </Row>
         </>
     );
 };

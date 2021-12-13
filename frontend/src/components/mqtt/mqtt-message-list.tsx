@@ -2,7 +2,6 @@ import * as React from 'react';
 import Message from './mqtt-message';
 import { MqttMessageType } from './mqtt-connection';
 import { Divider } from 'antd';
-import { useEffect, useState } from 'react';
 
 export interface MqttMessageListProps {
     messages: MqttMessageType[];
@@ -11,7 +10,7 @@ export interface MqttMessageListProps {
 const MqttMessageList: React.FC<MqttMessageListProps> = ({ messages }) => {
     return (
         <>
-            <Divider orientation="left">Results</Divider>
+            <Divider orientation="left">Messages</Divider>
             {messages.map((el, ind) => (
                 <Message msg={el} key={ind} />
             ))}
