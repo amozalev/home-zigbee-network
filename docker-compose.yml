@@ -30,6 +30,15 @@ services:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log/mosquitto.log:/mosquitto/log/mosquitto.log
-#  zigbe2mqtt:
-#    image: zigbee2mqtt/zigbee2mqtt-armv7:1.21.1-1
-#    container_name: home-zigbee-network-zigbee2mqtt
+  zigbe2mqtt:
+    image: koenkk/zigbee2mqtt
+    restart: unless-stopped
+    container_name: home-zigbee-network-zigbee2mqtt
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - ./zigbee2mqtt/data:/app/data
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
