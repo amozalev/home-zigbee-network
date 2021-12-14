@@ -18,6 +18,9 @@ services:
     command: npm run start
     volumes:
       - ./frontend/src:/usr/src/app/src
+    networks:
+      - home-zigbee-network-network
+
   mosquitto:
     image: eclipse-mosquitto:1.6.12
     container_name: home-zigbee-network-mosquitto
@@ -30,7 +33,10 @@ services:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log/mosquitto.log:/mosquitto/log/mosquitto.log
-  zigbe2mqtt:
+    networks:
+      - home-zigbee-network-network
+
+  zigbee2mqtt:
     image: koenkk/zigbee2mqtt
     restart: unless-stopped
     container_name: home-zigbee-network-zigbee2mqtt
@@ -42,3 +48,11 @@ services:
       - ./zigbee2mqtt/data:/app/data
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
+    depends_on:
+      - mosquitto
+    networks:
+      - home-zigbee-network-network
+
+networks:
+  home-zigbee-network-network:
+    driver: bridge

@@ -2,7 +2,7 @@ homeassistant: true
 permit_join: true
 mqtt:
   base_topic: zigbee2mqtt
-  server: mqtt://localhost
+  server: mqtt://mosquitto
   user: zigbee
   password: test
 serial:
@@ -19,8 +19,6 @@ frontend:
   port: 8080
 experimental:
   new_api: true
-external_converters: [
-    TZ3000_5ng23zjs.js
-]
+#external_converters: ./external-converters
 devices:
   devices.yaml
