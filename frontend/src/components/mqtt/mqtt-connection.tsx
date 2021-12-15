@@ -182,7 +182,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                     port: defaultPort,
                     path: '/mqtt',
                     connectionStatus: ConnectionStatusType.DISCONNECTED,
-                    topic: 'testyTestClient'
+                    topic: process.env.REACT_APP_DEFAULT_TOPIC || ''
                 }}
             >
                 <Divider orientation="left">

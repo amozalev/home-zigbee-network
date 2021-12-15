@@ -25,9 +25,10 @@ const HomePage: React.FC<any> = () => {
                         }}
                     >
                         <MqttExplorer
-                            defaultHost={process.env.REACT_APP_MQTT_BROKER}
+                            defaultHost={process.env.REACT_APP_MQTT_BROKER_HOST}
                             defaultPort={parseInt(
-                                process.env.REACT_APP_MQTT_PORT as string
+                                process.env
+                                    .REACT_APP_MQTT_BROKER_WS_PORT as string
                             )}
                         />
                     </Content>

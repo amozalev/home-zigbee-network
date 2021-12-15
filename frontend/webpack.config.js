@@ -154,16 +154,16 @@ module.exports = {
             'process.env.REACT_APP_PORT': JSON.stringify(
                 process.env.REACT_APP_PORT
             ),
-            'process.env.REACT_APP_MQTT_BROKER': JSON.stringify(
-                process.env.REACT_APP_MQTT_BROKER
+            'process.env.REACT_APP_MQTT_BROKER_HOST': JSON.stringify(
+                process.env.REACT_APP_MQTT_BROKER_HOST
             ),
-            'process.env.REACT_APP_MQTT_PORT': JSON.stringify(
-                process.env.REACT_APP_MQTT_PORT
+            'process.env.REACT_APP_MQTT_BROKER_WS_PORT': JSON.stringify(
+                process.env.REACT_APP_MQTT_BROKER_WS_PORT
             ),
-            'process.env.REACT_APP_MQTT_WEBSOCKET_PORT': JSON.stringify(
-                process.env.REACT_APP_MQTT_WEBSOCKET_PORT
+            'process.env.REACT_APP_DEFAULT_TOPIC': JSON.stringify(
+                process.env.REACT_APP_DEFAULT_TOPIC
             )
-        }),
+        })
     ],
     devServer: {
         host: '0.0.0.0',
@@ -174,6 +174,7 @@ module.exports = {
             aggregateTimeout: 0,
             poll: 1000
         },
+        allowedHosts: ['raspberrypi.local']
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx', '.json', '.css', '.html'],

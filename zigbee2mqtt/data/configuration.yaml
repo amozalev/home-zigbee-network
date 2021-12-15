@@ -1,4 +1,4 @@
-homeassistant: true
+homeassistant: false
 permit_join: true
 mqtt:
   base_topic: zigbee2mqtt
@@ -6,7 +6,7 @@ mqtt:
   user: zigbee
   password: test
 serial:
-  port: /dev/ttyUSB0
+  port: /dev/ttyUSB0 # for USB Stick CC2652
 queue:
   delay: 5
 advanced:
@@ -19,6 +19,7 @@ frontend:
   port: 8080
 experimental:
   new_api: true
-#external_converters: ./external-converters
+external_converters:
+  - ./external-converters/TZ3000_5ng23zjs.js
 devices:
-  devices.yaml
+  - devices.yaml

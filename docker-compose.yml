@@ -6,9 +6,9 @@ services:
       context: ./frontend
       args:
         - REACT_APP_PORT=3000
-        - REACT_APP_MQTT_BROKER=localhost
-        - REACT_APP_MQTT_PORT=1883
-        - REACT_APP_MQTT_WEBSOCKET_PORT=9001
+        - REACT_APP_MQTT_BROKER_HOST=raspberrypi.local
+        - REACT_APP_MQTT_BROKER_WS_PORT=8083
+        - REACT_APP_DEFAULT_TOPIC=zigbee2mqtt/+
     container_name: home-zigbee-network-frontend
     ports:
       - "3000:3000"
