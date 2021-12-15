@@ -12,7 +12,7 @@ import * as mqtt from 'mqtt';
 import { IClientOptions } from 'mqtt/types/lib/client-options';
 import { ISubscriptionGrant } from 'mqtt/types/lib/client';
 import * as mqttReducer from './mqtt-reducer';
-import { Col, Row } from 'antd';
+import { Col, message, Row } from 'antd';
 
 export interface MqttExplorerProps {
     defaultHost?: string | undefined;
@@ -122,6 +122,12 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     const onTopicSubscription = (err: Error, granted: ISubscriptionGrant[]) => {
         console.log('==subscribed', granted);
         //TODO temporarily used 1st array element
+        if (!granted) {
+            message
+                .error('Error on topic subscription')
+                .then((e) => console.log('topic subscription error:', e));
+            return;
+        }
         dispatch({
             type: 'topicSubscribe',
             payload: { topic: granted[0].topic }
