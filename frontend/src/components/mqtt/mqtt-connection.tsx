@@ -33,7 +33,7 @@ export interface MqttMessageType {
 
 export enum ConnectionStatusType {
     CONNECTED = 'Connected',
-    RECONNECTING = 'Reconnecting',
+    CONNECTING = 'Connecting',
     DISCONNECTED = 'Disconnected'
 }
 
@@ -121,7 +121,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
     const getConnectionStatusIcon = (
         connectionStatus: ConnectionStatusType
     ): React.ReactNode => {
-        const { CONNECTED, RECONNECTING, DISCONNECTED } = ConnectionStatusType;
+        const { CONNECTED, CONNECTING, DISCONNECTED } = ConnectionStatusType;
         switch (connectionStatus) {
             case CONNECTED:
                 return (
@@ -130,7 +130,7 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                         className={style.dividerSpanIcon}
                     />
                 );
-            case RECONNECTING:
+            case CONNECTING:
                 return (
                     <SyncOutlined
                         spin={true}
@@ -252,10 +252,17 @@ const MqttConnectionForm: React.FC<MqttClientProps> = ({
                 </Form.Item>
                 <Form.Item wrapperCol={{ span: 24, offset: 4 }}>
                     <Space>
-                        <Button type="primary" htmlType="submit">
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={
+                                connectionStatus ===
+                                ConnectionStatusType.CONNECTING
+                            }
+                        >
                             {[
                                 ConnectionStatusType.CONNECTED,
-                                ConnectionStatusType.RECONNECTING
+                                ConnectionStatusType.CONNECTING
                             ].includes(connectionStatus as ConnectionStatusType)
                                 ? 'Disconnect'
                                 : 'Connect'}

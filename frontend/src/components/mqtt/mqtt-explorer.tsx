@@ -32,6 +32,10 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
     const connAttempts = useRef<number>(0);
 
     const mqttConnect = useCallback((url: string, options: IClientOptions) => {
+        dispatch({
+            type: 'setConnectionStatus',
+            payload: { connectionStatus: ConnectionStatusType.CONNECTING }
+        });
         setClient(mqtt.connect(url, options));
         console.log('==mqttConnect client', client);
     }, []);
@@ -70,7 +74,7 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
             connAttempts.current++;
             dispatch({
                 type: 'setConnectionStatus',
-                payload: { connectionStatus: ConnectionStatusType.RECONNECTING }
+                payload: { connectionStatus: ConnectionStatusType.CONNECTING }
             });
             if (connAttempts.current >= 2) {
                 client?.end();
@@ -130,7 +134,7 @@ const MqttExplorer: React.FC<MqttExplorerProps> = ({
         }
         dispatch({
             type: 'topicSubscribe',
-            payload: { topic: granted[0].topic }
+            payload: { topic: granted?.[0].topic }
         });
     };
 
