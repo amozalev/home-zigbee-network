@@ -174,7 +174,9 @@ module.exports = {
             aggregateTimeout: 0,
             poll: 1000
         },
-        allowedHosts: ['raspberrypi.local']
+        compress: true,
+        disableHostCheck: true // with nginx
+        // allowedHosts: ['raspberrypi.local']
     },
     resolve: {
         extensions: ['.js', '.ts', '.tsx', '.json', '.css', '.html'],
