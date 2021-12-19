@@ -56,17 +56,17 @@ services:
     networks:
       - home-zigbee-network-network
 
-#  nginx:
-#    image: nginx:stable-alpine
-#    container_name: home-zigbee-network-nginx
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - ./nginx/nginx.conf.prod:/etc/nginx/conf.d
-#    depends_on:
-#      - frontend
-#    networks:
-#      - home-zigbee-network-network
+  nginx:
+    image: nginx:stable-alpine
+    container_name: home-zigbee-network-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf.prod:/etc/nginx/conf.d
+    depends_on:
+      - frontend
+    networks:
+      - home-zigbee-network-network
 
 networks:
   home-zigbee-network-network:
