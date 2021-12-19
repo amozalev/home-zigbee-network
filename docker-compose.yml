@@ -9,9 +9,11 @@ services:
         - REACT_APP_MQTT_BROKER_HOST=raspberrypi.local
         - REACT_APP_MQTT_BROKER_WS_PORT=8083
         - REACT_APP_DEFAULT_TOPIC=zigbee2mqtt/+
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
     container_name: home-zigbee-network-frontend
-#    ports:
-#      - "3000:3000"
+    ports:
+      - "3000:3000"
     restart: unless-stopped
     stdin_open: true
     tty: true
@@ -46,6 +48,7 @@ services:
       - TZ=Europe/Moscow
     volumes:
       - ./zigbee2mqtt/data:/app/data
+#      - /run/udev:/run/udev:ro
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
     depends_on:
@@ -53,17 +56,17 @@ services:
     networks:
       - home-zigbee-network-network
 
-  nginx:
-    image: nginx:stable-alpine
-    container_name: home-zigbee-network-nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf.prod:/etc/nginx/conf.d
-    depends_on:
-      - frontend
-    networks:
-      - home-zigbee-network-network
+#  nginx:
+#    image: nginx:stable-alpine
+#    container_name: home-zigbee-network-nginx
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ./nginx/nginx.conf.prod:/etc/nginx/conf.d
+#    depends_on:
+#      - frontend
+#    networks:
+#      - home-zigbee-network-network
 
 networks:
   home-zigbee-network-network:

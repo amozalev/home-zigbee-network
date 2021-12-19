@@ -164,16 +164,17 @@ module.exports = {
                 process.env.REACT_APP_DEFAULT_TOPIC
             )
         })
+        // new webpack.HotModuleReplacementPlugin()
     ],
     devServer: {
         host: '0.0.0.0',
         port: port,
         historyApiFallback: true,
         hot: true,
-        watchOptions: {
-            aggregateTimeout: 0,
-            poll: 1000
-        },
+        // watchOptions: {
+        //     aggregateTimeout: 0,
+        //     poll: 1000
+        // },
         compress: true,
         disableHostCheck: true // with nginx
         // allowedHosts: ['raspberrypi.local']
