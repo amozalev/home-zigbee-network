@@ -1,3 +1,0 @@
-CREATE DATABASE telegraf WITH DURATION 31d
-CREATE USER telegraf WITH PASSWORD 'telegrafInfluxPass'
-GRANT WRITE ON telegraf to telegraf
