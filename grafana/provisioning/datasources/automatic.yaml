@@ -4,7 +4,7 @@ datasources:
     type: influxdb
     url: http://influxdb:8086
     access: proxy
-    database: telegraf
+    database: $INFLUXDB_DATABASE
     user: $INFLUXDB_GRAFANA_USER
     secureJsonData:
       password: $INFLUXDB_GRAFANA_PASSWORD
