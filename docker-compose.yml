@@ -74,6 +74,8 @@ services:
       - INFLUXDB_HTTP_AUTH_ENABLED=true
       - INFLUXDB_TELEGRAF_USER=${INFLUXDB_TELEGRAF_USER}
       - INFLUXDB_TELEGRAF_PASSWORD=${INFLUXDB_TELEGRAF_PASSWORD}
+      - INFLUXDB_GRAFANA_USER=${INFLUXDB_GRAFANA_USER}
+      - INFLUXDB_GRAFANA_PASSWORD=${INFLUXDB_GRAFANA_PASSWORD}
 
   telegraf:
     image: telegraf:1.21.1
@@ -89,6 +91,23 @@ services:
     environment:
       - INFLUXDB_TELEGRAF_USER=${INFLUXDB_TELEGRAF_USER}
       - INFLUXDB_TELEGRAF_PASSWORD=${INFLUXDB_TELEGRAF_PASSWORD}
+
+  grafana:
+    image: grafana/grafana:main
+    restart: unless-stopped
+    container_name: home-zigbee-network-grafana
+    ports:
+      - "3003:3000"
+    #user: '104'
+    depends_on:
+      - influxdb
+    networks:
+      - home-zigbee-network-network
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - INFLUXDB_GRAFANA_USER=${INFLUXDB_GRAFANA_USER}
+      - INFLUXDB_GRAFANA_PASSWORD=${INFLUXDB_GRAFANA_PASSWORD}
 
 #  nginx:
 #    image: nginx:stable-alpine
