@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   frontend:
     build:
@@ -11,7 +9,7 @@ services:
         - REACT_APP_DEFAULT_TOPIC=zigbee2mqtt/+
     environment:
       CHOKIDAR_USEPOLLING: "true"
-    container_name: home-zigbee-network-frontend
+    container_name: zigbee-frontend
     ports:
       - "3000:3000"
     restart: unless-stopped
@@ -21,11 +19,11 @@ services:
     volumes:
       - ./frontend/src:/usr/src/app/src
     networks:
-      - home-zigbee-network-network
+      - zigbee-network
 
   mosquitto:
-    image: eclipse-mosquitto:1.6.12
-    container_name: home-zigbee-network-mosquitto
+    image: eclipse-mosquitto:2.0
+    container_name: zigbee-mosquitto
     restart: unless-stopped
     ports:
       - "1883:1883"
@@ -36,38 +34,38 @@ services:
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log/mosquitto.log:/mosquitto/log/mosquitto.log
     networks:
-      - home-zigbee-network-network
+      - zigbee-network
 
   zigbee2mqtt:
-    image: koenkk/zigbee2mqtt
+    image: ghcr.io/koenkk/zigbee2mqtt:latest
     restart: unless-stopped
-    container_name: home-zigbee-network-zigbee2mqtt
+    container_name: zigbee-zigbee2mqtt
     ports:
       - "8080:8080"
     environment:
-      - TZ=Europe/Moscow
+      - TZ=Asia/Jerusalem
     volumes:
       - ./zigbee2mqtt/data:/app/data
-    #      - /run/udev:/run/udev:ro
+      - /run/udev:/run/udev:ro
     devices:
       - /dev/ttyUSB0:/dev/ttyUSB0
     depends_on:
       - mosquitto
     networks:
-      - home-zigbee-network-network
+      - zigbee-network
 
   influxdb:
-    image: influxdb:1.8.9
+    image: influxdb:2-alpine
     restart: unless-stopped
-    container_name: home-zigbee-network-influxdb
+    container_name: zigbee-influxdb
     ports:
       - "8086:8086"
     networks:
-      - home-zigbee-network-network
+      - zigbee-network
     volumes:
       - ./influxdb/data:/var/lib/influxdb
       - ./influxdb/init:/docker-entrypoint-initdb.d
-#      - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
+    #      - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
     environment:
       - INFLUXDB_DATABASE=$INFLUXDB_DATABASE
       - INFLUXDB_ADMIN_USER=$INFLUXDB_ADMIN_USER
@@ -79,42 +77,42 @@ services:
       - INFLUXDB_GRAFANA_PASSWORD=${INFLUXDB_GRAFANA_PASSWORD}
 
   telegraf:
-    image: telegraf:1.21.1
+    image: telegraf:1.39.1-alpine
     restart: unless-stopped
-    container_name: home-zigbee-network-telegraf
+    container_name: zigbee-telegraf
     volumes:
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     depends_on:
       - mosquitto
       - influxdb
     networks:
-      - home-zigbee-network-network
+      - zigbee-network
     environment:
       - INFLUXDB_DATABASE=${INFLUXDB_DATABASE}
       - INFLUXDB_TELEGRAF_USER=${INFLUXDB_TELEGRAF_USER}
       - INFLUXDB_TELEGRAF_PASSWORD=${INFLUXDB_TELEGRAF_PASSWORD}
 
-  grafana:
-    image: grafana/grafana:main
-    restart: unless-stopped
-    container_name: home-zigbee-network-grafana
-    ports:
-      - "3003:3000"
-    #user: '104'
-    depends_on:
-      - influxdb
-    networks:
-      - home-zigbee-network-network
-    volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
-    environment:
-      - INFLUXDB_DATABASE=${INFLUXDB_DATABASE}
-      - INFLUXDB_GRAFANA_USER=${INFLUXDB_GRAFANA_USER}
-      - INFLUXDB_GRAFANA_PASSWORD=${INFLUXDB_GRAFANA_PASSWORD}
+#  grafana:
+#    image: grafana/grafana:main
+#    restart: unless-stopped
+#    container_name: zigbee-grafana
+#    ports:
+#      - "3003:3000"
+#    #user: '104'
+#    depends_on:
+#      - influxdb
+#    networks:
+#      - zigbee-network
+#    volumes:
+#      - ./grafana/provisioning:/etc/grafana/provisioning
+#    environment:
+#      - INFLUXDB_DATABASE=${INFLUXDB_DATABASE}
+#      - INFLUXDB_GRAFANA_USER=${INFLUXDB_GRAFANA_USER}
+#      - INFLUXDB_GRAFANA_PASSWORD=${INFLUXDB_GRAFANA_PASSWORD}
 
 #  nginx:
 #    image: nginx:stable-alpine
-#    container_name: home-zigbee-network-nginx
+#    container_name: zigbee-nginx
 #    ports:
 #      - "80:80"
 #    volumes:
@@ -122,8 +120,8 @@ services:
 #    depends_on:
 #      - frontend
 #    networks:
-#      - home-zigbee-network-network
+#      - zigbee-network
 
 networks:
-  home-zigbee-network-network:
+  zigbee-network:
     driver: bridge
