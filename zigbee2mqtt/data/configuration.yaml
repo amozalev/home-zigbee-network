@@ -1,25 +1,21 @@
-homeassistant: false
-permit_join: true
+homeassistant:
+  enabled: false
 mqtt:
   base_topic: zigbee2mqtt
-  server: mqtt://mosquitto
+  server: mqtt://mosquitto:1883
   user: zigbee
   password: test
 serial:
-  port: /dev/ttyUSB0 # for USB Stick CC2652
+  adapter: zstack
+  port: /dev/ttyUSB0
 queue:
   delay: 5
-advanced:
-  homeassistant_legacy_entity_attributes: false
-  legacy_api: false
-device_options:
-  legacy: false
+advanced: { }
+device_options: { }
 zigbee_shepherd_devices: true
 frontend:
+  enabled: true
   port: 8080
-experimental:
-  new_api: true
-external_converters:
-  - ./external-converters/TZ3000_5ng23zjs.js
 devices:
   - devices.yaml
+version: 5
