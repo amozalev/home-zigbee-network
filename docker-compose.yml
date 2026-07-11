@@ -62,6 +62,15 @@ services:
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - TZ=Asia/Jerusalem
 
+  explorer:
+    image: influxdata/influxdb3-ui:1.9.0
+    container_name: influxdb3-explorer
+    ports:
+      - "127.0.0.1:8888:8080"
+    volumes:
+      - ./config:/app-root/config:ro
+    restart: unless-stopped
+
   telegraf:
     image: telegraf:1.39.1-alpine
     restart: unless-stopped
