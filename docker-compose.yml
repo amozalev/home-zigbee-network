@@ -1,25 +1,25 @@
 services:
-#  frontend:
-#    build:
-#      context: ./frontend
-#      args:
-#        - REACT_APP_PORT=3000
-#        - REACT_APP_MQTT_BROKER_HOST=raspberrypi.local
-#        - REACT_APP_MQTT_BROKER_WS_PORT=8083
-#        - REACT_APP_DEFAULT_TOPIC=zigbee2mqtt/+
-#    environment:
-#      CHOKIDAR_USEPOLLING: "true"
-#    container_name: zigbee-frontend
-#    ports:
-#      - "3000:3000"
-#    restart: unless-stopped
-#    stdin_open: true
-#    tty: true
-#    command: npm run start
-#    volumes:
-#      - ./frontend/src:/usr/src/app/src
-#    networks:
-#      - zigbee-network
+  #  frontend:
+  #    build:
+  #      context: ./frontend
+  #      args:
+  #        - REACT_APP_PORT=3000
+  #        - REACT_APP_MQTT_BROKER_HOST=raspberrypi.local
+  #        - REACT_APP_MQTT_BROKER_WS_PORT=8083
+  #        - REACT_APP_DEFAULT_TOPIC=zigbee2mqtt/+
+  #    environment:
+  #      CHOKIDAR_USEPOLLING: "true"
+  #    container_name: zigbee-frontend
+  #    ports:
+  #      - "3000:3000"
+  #    restart: unless-stopped
+  #    stdin_open: true
+  #    tty: true
+  #    command: npm run start
+  #    volumes:
+  #      - ./frontend/src:/usr/src/app/src
+  #    networks:
+  #      - zigbee-network
 
   mosquitto:
     image: eclipse-mosquitto:2.0
@@ -61,26 +61,34 @@ services:
       - zigbee-network
 
   influxdb:
-    image: influxdb:2-alpine
+    image: influxdb:3.10.1-core
     restart: unless-stopped
     container_name: zigbee-influxdb
     ports:
-      - "8086:8086"
+      - "8181:8181"
     networks:
       - zigbee-network
     volumes:
-      - ./influxdb/data:/var/lib/influxdb2
-      - ./influxdb/init:/docker-entrypoint-initdb.d
+      - ./influxdb/data:/data
+    #      - ./influxdb/init:/docker-entrypoint-initdb.d
     #      - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
+    command:
+      - influxdb3
+      - serve
+      - --node-id
+      - node0
+      - --object-store
+      - file
+      - --data-dir
+      - /var/lib/influxdb3
+      - --auth-token
+      - ${INFLUXDB3_ADMIN_TOKEN}
     environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_ADMIN_USER}
-      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
-      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
-      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUXDB_ADMIN_TOKEN}
+      - INFLUXDB3_DATABASE=${INFLUXDB3_DATABASE}
+      - INFLUXDB3_ADMIN_TOKEN=${INFLUXDB3_ADMIN_TOKEN}
+      - TZ=Asia/Jerusalem
     healthcheck:
-      test: ["CMD", "influx", "ping"]
+      test: [ "CMD", "influx", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -101,9 +109,8 @@ services:
     networks:
       - zigbee-network
     environment:
-      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
-      - INFLUXDB_ORG=home
-      - INFLUXDB_TOKEN=${INFLUXDB_ADMIN_TOKEN}
+      - INFLUX_DATABASE=${INFLUXDB3_DATABASE}
+      - INFLUX_TOKEN=${INFLUXDB_TELEGRAF_TOKEN}
 
 #  grafana:
 #    image: grafana/grafana:main
