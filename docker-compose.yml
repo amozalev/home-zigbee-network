@@ -60,13 +60,8 @@ services:
     environment:
       - INFLUXDB3_DATABASE=${INFLUXDB3_DATABASE}
       - INFLUXDB3_AUTH_TOKEN=${INFLUXDB3_AUTH_TOKEN}
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
       - TZ=Asia/Jerusalem
-    healthcheck:
-      test: [ "CMD", "influxdb3", "ping", "--host", "http://localhost:8181" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 20s
 
   telegraf:
     image: telegraf:1.39.1-alpine
@@ -76,7 +71,7 @@ services:
       - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
     depends_on:
       influxdb:
-        condition: service_healthy
+        condition: service_started
         restart: true
       mosquitto:
         condition: service_started
