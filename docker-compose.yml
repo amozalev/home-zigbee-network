@@ -59,7 +59,6 @@ services:
       - /var/lib/influxdb3
     environment:
       - INFLUXDB3_DATABASE=${INFLUXDB3_DATABASE}
-      - INFLUXDB3_AUTH_TOKEN=${INFLUXDB3_AUTH_TOKEN}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - TZ=Asia/Jerusalem
 
