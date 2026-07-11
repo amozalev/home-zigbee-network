@@ -70,6 +70,8 @@ services:
     volumes:
       - ./config:/app-root/config:ro
     restart: unless-stopped
+    networks:
+      - zigbee-network
 
   telegraf:
     image: telegraf:1.39.1-alpine
