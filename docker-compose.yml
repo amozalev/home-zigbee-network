@@ -1,26 +1,4 @@
 services:
-  #  frontend:
-  #    build:
-  #      context: ./frontend
-  #      args:
-  #        - REACT_APP_PORT=3000
-  #        - REACT_APP_MQTT_BROKER_HOST=raspberrypi.local
-  #        - REACT_APP_MQTT_BROKER_WS_PORT=8083
-  #        - REACT_APP_DEFAULT_TOPIC=zigbee2mqtt/+
-  #    environment:
-  #      CHOKIDAR_USEPOLLING: "true"
-  #    container_name: zigbee-frontend
-  #    ports:
-  #      - "3000:3000"
-  #    restart: unless-stopped
-  #    stdin_open: true
-  #    tty: true
-  #    command: npm run start
-  #    volumes:
-  #      - ./frontend/src:/usr/src/app/src
-  #    networks:
-  #      - zigbee-network
-
   mosquitto:
     image: eclipse-mosquitto:2.0
     container_name: zigbee-mosquitto
@@ -69,9 +47,7 @@ services:
     networks:
       - zigbee-network
     volumes:
-      - ./influxdb/data:/data
-    #      - ./influxdb/init:/docker-entrypoint-initdb.d
-    #      - ./influxdb/influxdb.conf:/etc/influxdb/influxdb.conf
+      - ./influxdb/data:/var/lib/influxdb3
     command:
       - influxdb3
       - serve
@@ -81,14 +57,12 @@ services:
       - file
       - --data-dir
       - /var/lib/influxdb3
-      - --auth-token
-      - ${INFLUXDB3_ADMIN_TOKEN}
     environment:
       - INFLUXDB3_DATABASE=${INFLUXDB3_DATABASE}
-      - INFLUXDB3_ADMIN_TOKEN=${INFLUXDB3_ADMIN_TOKEN}
+      - INFLUXDB3_AUTH_TOKEN=${INFLUXDB3_AUTH_TOKEN}
       - TZ=Asia/Jerusalem
     healthcheck:
-      test: [ "CMD", "influx", "ping" ]
+      test: [ "CMD", "influxdb3", "ping", "--host", "http://localhost:8181" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -110,37 +84,7 @@ services:
       - zigbee-network
     environment:
       - INFLUX_DATABASE=${INFLUXDB3_DATABASE}
-      - INFLUX_TOKEN=${INFLUXDB_TELEGRAF_TOKEN}
-
-#  grafana:
-#    image: grafana/grafana:main
-#    restart: unless-stopped
-#    container_name: zigbee-grafana
-#    ports:
-#      - "3003:3000"
-#    #user: '104'
-#    depends_on:
-#      - influxdb
-#    networks:
-#      - zigbee-network
-#    volumes:
-#      - ./grafana/provisioning:/etc/grafana/provisioning
-#    environment:
-#      - INFLUXDB_DATABASE=${INFLUXDB_BUCKET}
-#      - INFLUXDB_GRAFANA_USER=${INFLUXDB_GRAFANA_USER}
-#      - INFLUXDB_GRAFANA_PASSWORD=${INFLUXDB_GRAFANA_PASSWORD}
-
-#  nginx:
-#    image: nginx:stable-alpine
-#    container_name: zigbee-nginx
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - ./nginx/nginx.conf.prod:/etc/nginx/conf.d
-#    depends_on:
-#      - frontend
-#    networks:
-#      - zigbee-network
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
 
 networks:
   zigbee-network:
