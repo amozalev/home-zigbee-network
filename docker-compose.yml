@@ -20,7 +20,7 @@ services:
       retries: 5
 
   zigbee2mqtt:
-    image: ghcr.io/koenkk/zigbee2mqtt:latest
+    image: ghcr.io/koenkk/zigbee2mqtt:2.12.1
     restart: unless-stopped
     container_name: zigbee-zigbee2mqtt
     ports:
