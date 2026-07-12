@@ -10,12 +10,21 @@ serial:
   port: /dev/ttyUSB0
 queue:
   delay: 5
-advanced: { }
+advanced:
+  log_level: info
+  cache_state: true
+  cache_state_persistent: true
+  last_seen: ISO_8601_local
+#  channel: 15
 device_options: { }
 zigbee_shepherd_devices: true
 frontend:
   enabled: true
   port: 8080
+availability:
+  enabled: true
+  passive:
+    timeout: 180
 devices:
   - devices.yaml
 version: 5

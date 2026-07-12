@@ -3,3 +3,9 @@
   name: Soil moisture sensor
 '0xb4e3f9fffe1e4538':
   friendly_name: 'gitierSwitch'
+'0xcc36bbfffe7e2d07':
+  friendly_name: kitchen_temperature
+'0x70d07efffea520d7':
+  friendly_name: cabinet_temperature
+'0xb0e8e8fffeeb1656':
+  friendly_name: bedroom_temperature
