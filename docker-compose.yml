@@ -16,7 +16,6 @@ services:
     volumes:
       - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log/mosquitto.log:/mosquitto/log/mosquitto.log
     networks:
       - zigbee-network
     healthcheck:
@@ -101,6 +100,35 @@ services:
       - INFLUX_DATABASE=${INFLUXDB3_DATABASE}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
     logging: *default-logging
+
+  loki:
+    image: grafana/loki:3.7.3
+    container_name: loki
+    restart: unless-stopped
+    command:
+      - "-config.file=/etc/loki/config.yml"
+    ports:
+      - "127.0.0.1:3100:3100"
+    volumes:
+      - ./loki/config.yml:/etc/loki/config.yml:ro
+      - ./loki/data:/loki
+    networks:
+      - zigbee-network
+
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    restart: unless-stopped
+    command:
+      - run
+      - /etc/alloy/config.alloy
+    volumes:
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - zigbee-network
+    depends_on:
+      - loki
 
 networks:
   zigbee-network:

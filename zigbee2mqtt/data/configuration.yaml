@@ -11,6 +11,8 @@ serial:
 queue:
   delay: 5
 advanced:
+  log_output:
+    - console
   log_level: info
   cache_state: true
   cache_state_persistent: true
