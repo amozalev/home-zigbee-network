@@ -116,14 +116,14 @@ services:
       - zigbee-network
 
   alloy:
-    image: grafana/alloy:latest
+    image: grafana/alloy:v1.17.1
     container_name: alloy
     restart: unless-stopped
     command:
       - run
       - /etc/alloy/config.alloy
     volumes:
-      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - ./alloy/config.yml:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - zigbee-network
