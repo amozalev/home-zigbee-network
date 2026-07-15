@@ -1,3 +1,9 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   mosquitto:
     image: eclipse-mosquitto:2.0
@@ -18,13 +24,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    logging: *default-logging
 
   zigbee2mqtt:
     image: ghcr.io/koenkk/zigbee2mqtt:2.12.1
     restart: unless-stopped
     container_name: zigbee-zigbee2mqtt
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       - TZ=Asia/Jerusalem
     volumes:
@@ -37,13 +44,14 @@ services:
         condition: service_started
     networks:
       - zigbee-network
+    logging: *default-logging
 
   influxdb:
     image: influxdb:3.10.1-core
     restart: unless-stopped
     container_name: zigbee-influxdb
     ports:
-      - "8181:8181"
+      - "127.0.0.1:8181:8181"
     networks:
       - zigbee-network
     volumes:
@@ -61,6 +69,7 @@ services:
       - INFLUXDB3_DATABASE=${INFLUXDB3_DATABASE}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - TZ=Asia/Jerusalem
+    logging: *default-logging
 
   explorer:
     image: influxdata/influxdb3-ui:1.9.0
@@ -72,6 +81,7 @@ services:
     restart: unless-stopped
     networks:
       - zigbee-network
+    logging: *default-logging
 
   telegraf:
     image: telegraf:1.39.1-alpine
@@ -90,6 +100,7 @@ services:
     environment:
       - INFLUX_DATABASE=${INFLUXDB3_DATABASE}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
+    logging: *default-logging
 
 networks:
   zigbee-network:

@@ -9,3 +9,5 @@
   friendly_name: cabinet_temperature
 '0xb0e8e8fffeeb1656':
   friendly_name: bedroom_temperature
+'0xb0e8e8fffe3bad79':
+  friendly_name: garden_pump_relay1
