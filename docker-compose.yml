@@ -75,7 +75,7 @@ services:
     image: influxdata/influxdb3-ui:1.9.0
     container_name: influxdb3-explorer
     ports:
-      - "127.0.0.1:8888:8080"
+      - "127.0.0.1:8888:80"
     volumes:
       - ./config:/app-root/config:ro
     restart: unless-stopped
