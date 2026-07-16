@@ -123,7 +123,7 @@ services:
       - run
       - /etc/alloy/config.alloy
     volumes:
-      - ./alloy/config.yml:/etc/alloy/config.alloy:ro
+      - ./alloy/config.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - zigbee-network
