@@ -11,3 +11,9 @@
   friendly_name: bedroom_temperature
 '0xb0e8e8fffe3bad79':
   friendly_name: garden_pump_relay1
+'0x7c3e8237be610000':
+  friendly_name: garden_soil_moisture1
+'0x7c3e8237cccb0000':
+  friendly_name: garden_soil_moisture2
+'0x7c3e8237d33b0000':
+  friendly_name: garden_soil_moisture3
